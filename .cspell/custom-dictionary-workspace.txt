@@ -78,6 +78,7 @@ RTCP
 rtpmap
 Samplerate
 screenshotting
+signaling
 SDID
 SMIL
 SMPTE
@@ -113,3 +114,6 @@ wallclock
 WSTS
 YCbCr
 xyflow
+cutoff
+packetization
+

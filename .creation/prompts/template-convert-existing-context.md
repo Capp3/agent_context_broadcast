@@ -45,7 +45,7 @@ Remove or generalize:
 
 Use neutral alternatives:
 
-- `engineering tools`
+- consumer-specific tool or project names
 - `design-time validation`
 - `implementation model`
 - `reference implementation`

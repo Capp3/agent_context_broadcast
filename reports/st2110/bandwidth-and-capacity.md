@@ -1,12 +1,31 @@
-# ST 2110 Bandwidth & Capacity Calculation Truth Report for engineering tools
+---
+report_id: st2110-bandwidth-and-capacity
+title: ST 2110 Bandwidth and Capacity Calculation Truth Report
+topic: SMPTE ST 2110 bandwidth and capacity calculations
+report_version: 0.1.0
+generated_date: 2026-08-26
+converted_date: 2026-08-26
+source_documents:
+  - Prior ST 2110 bandwidth and capacity report
+source_access: mixed
+source_cutoff: unknown
+conversion_prompt: template-convert-existing-context.md
+conversion_prompt_version: 0.1.0
+prompt_template: template-convert-existing-context.md
+prompt_template_version: 0.1.0
+status: draft
+supersedes: bandwidth@0.1.0
+---
+
+# ST 2110 Bandwidth and Capacity Calculation Truth Report
+
+## 1. Executive Summary
 
 **Document Purpose:** Define what can be calculated reliably from standards, what requires assumptions, and how to model uncertainty safely in SMPTE ST 2110 IP media networks.
 
-**Edition:** May 2026 | **Audience:** engineering tools capacity planners and network engineers
+**Edition:** May 2026 | **Audience:** implementations capacity planners and network engineers
 
 ---
-
-## 1. Executive Summary
 
 SMPTE ST 2110 transports video, audio, and ancillary data as separate, synchronized RTP essence streams over managed IP networks. Unlike SDI, which carries all essences in a single fixed-bandwidth signal, ST 2110 disaggregates the signal into independently routable flows — each with its own bandwidth footprint, traffic profile, and packetization behavior. This disaggregation introduces precision in capacity planning but also expands the number of variables that must be accounted for.[^1][^2]
 
@@ -15,9 +34,9 @@ SMPTE ST 2110 transports video, audio, and ancillary data as separate, synchroni
 - Video (ST 2110-20) essence bandwidth using the VSF TR-05 Approximate Signal Bandwidth (ASB) formula, derived from SDP parameters and pgroup values in SMPTE ST 2110-20:2017[^3][^4]
 - Audio (ST 2110-30/AES67) essence bandwidth using sample rate, bit depth, channel count, and packet time[^5]
 - Transport overhead structure (IP + UDP + RTP headers = 40 bytes per packet; Layer 1 Ethernet overhead = 20 bytes per packet)[^6][^7]
-- ST 2110-21 leaky bucket model parameters (CMAX and VRXFULL) for Narrow (N), Narrow-Linear (NL), and Wide (W) sender types[^8][^9]
+- ST 2110-21 leaky bucket model parameters only when backed by licensed standard text or explicitly labeled secondary guidance; CMAX and VRXFULL values from secondary material remain verification inputs rather than hard-coded conformance truth[^8][^9]
 
-**What requires engineering assumptions (must be labeled):**
+**What requires engineering assumptions (should be labeled):**
 
 - Aggregate link utilization headroom (no normative percentage defined in ST 2110 standards)
 - Safety margins for traffic bursts and simultaneous flow activations
@@ -33,7 +52,11 @@ SMPTE ST 2110 transports video, audio, and ancillary data as separate, synchroni
 
 ---
 
-## 2. Standards and Formula Source Map
+## 2. Scope and Boundaries
+
+This report covers ST 2110 capacity planning, bandwidth formulas, packet-overhead accounting, link modeling, and traffic-shaping assumptions. It does not own the full ST 2110 essence model, PTP timing architecture, or generic AES67 interoperability model except where those topics directly affect capacity calculations.
+
+## 3. Standards and Source Map
 
 The following primary standards govern the bandwidth and capacity domain. All formulas in this report are traced to one of these documents.
 
@@ -58,7 +81,97 @@ The following primary standards govern the bandwidth and capacity domain. All fo
 
 ---
 
-## 3. Calculation Rules Catalog
+## 4. Normative Requirements Catalog
+
+This report is calculation-focused. Normative, informative, derived, assumed, secondary, and unverified claims are retained in the formula tables, source map, validation checklist, and risk register rather than promoted into a separate consolidated catalog. Future regeneration should extract stable calculation requirements into this section when primary clause-level source visibility is available.
+
+## 5. Engineering Model
+
+### Required Inputs
+
+The following inputs should be provided or confirmed before bandwidth and capacity calculations proceed. Inputs are categorized by whether they are derivable from standards or are operator-supplied.
+
+### 4.1 Per-Essence Inputs (Required for Each Flow)
+
+| Input Field                  | Source           | Standards Derivable? | Notes                                                    |
+| ---------------------------- | ---------------- | -------------------- | -------------------------------------------------------- |
+| Video width (pixels)         | SDP / device     | Yes (via SDP)        | From `width=` parameter                                  |
+| Video height (pixels)        | SDP / device     | Yes (via SDP)        | From `height=` parameter                                 |
+| Exact frame rate (M/N ratio) | SDP / device     | Yes                  | Use exact rational (e.g., 60000/1001 not 59.94)[^4]      |
+| Sampling format              | SDP / device     | Yes                  | YCbCr-4:2:2, 4:4:4, RGB, etc.[^4]                        |
+| Bit depth                    | SDP / device     | Yes                  | 8, 10, 12-bit; determines pgroup[^19]                    |
+| Packing mode                 | SDP / device     | Yes                  | GPM (2110GPM) or BPM; GPM recommended[^4]                |
+| Sender type (TP parameter)   | SDP / device     | Yes                  | 2110TPN, 2110TPNL, 2110TPW[^20][^38]                     |
+| Audio sample rate            | SDP / device     | Partially            | 48 kHz mandatory; 96 kHz optional[^25]                   |
+| Audio bit depth              | SDP / device     | Partially            | L16 or L24 mandatory; others optional[^5]                |
+| Audio channels per stream    | SDP / device     | No                   | 1–8 at Level A; operator should confirm                  |
+| Audio packet time            | SDP / device     | Partially            | 1 ms mandatory; 125 µs optional[^25]                     |
+| ST 2022-7 active?            | Operator / IS-05 | No                   | Doubles all bandwidth figures[^22]                       |
+| Flow activation state        | IS-04 / IS-05    | No                   | Active vs staged/inactive flows affect measurement scope |
+
+### 4.2 Per-Link / Per-Switch Inputs
+
+| Input Field                                 | Who Provides       | Notes                                          |
+| ------------------------------------------- | ------------------ | ---------------------------------------------- |
+| Physical link speed (Gbps)                  | Network topology   | 1G, 10G, 25G, 40G, 100G[^39]                   |
+| VLAN tagging in use?                        | Network config     | Adds 4 bytes per packet overhead[^28]          |
+| Switch port type (access/trunk)             | Network config     | Affects multicast replication traffic          |
+| Connected device list per port              | Network topology   | Needed for ingress/egress budgeting            |
+| Multicast group memberships                 | IGMP state / IS-06 | Determines which flows traverse each link[^40] |
+| Jumbo frames enabled?                       | Network config     | Affects per-packet L1 overhead fraction[^7]    |
+| ST 2022-7 topology (single vs dual network) | Operator           | Determines bandwidth multiplier[^36]           |
+
+### 4.3 System-Level Inputs
+
+| Input Field                                                               | Who Provides         | Notes                                                      |
+| ------------------------------------------------------------------------- | -------------------- | ---------------------------------------------------------- |
+| Target link utilization ceiling (%)                                       | Engineering policy   | No normative value exists; must be operator-defined        |
+| Safety margin (%)                                                         | Engineering policy   | Non-normative; must be labeled as assumption               |
+| PTP / management traffic budget                                           | Network design       | Typically low but non-zero; should be measured             |
+| Flow count at peak concurrency                                            | Operator / scheduler | Active vs subscribed vs reserved distinction required[^41] |
+| Routing transition model (join-before-leave, leave-before-join, hard cut) | Operator             | Affects peak bandwidth during routing changes[^41]         |
+
+---
+
+### Derived Outputs and Reporting Requirements
+
+### 5.1 Per-Essence Bandwidth Output
+
+For each defined essence flow, Implementations should output:
+
+- **ASB (Mbit/s):** Calculated using VSF TR-05 formula; labeled as Informative[^4]
+- **Packets per second:** Derived from packets_per_frame × frame_rate (video) or 1/packet_time (audio)
+- **Transport overhead add-on:** IP/UDP/RTP = 40 bytes per packet; L2 = 18 bytes; L1 = 20 bytes[^6][^7]
+- **Wire-rate bandwidth:** ASB adjusted for total header overhead
+- **Sender type declared:** N, NL, or W — affects switch buffer requirement[^8]
+
+### 5.2 Aggregate Link Budget Output
+
+For each monitored link:
+
+- **Sum of active ingress flows × bandwidth per flow:** This is the active bandwidth load
+- **Comparison against physical link capacity**
+- **Utilization percentage:** (Active bandwidth / Link capacity) × 100
+- **Available headroom:** Link capacity − active bandwidth − management/control traffic reserve
+
+### 5.3 ST 2022-7 Adjusted Output
+
+Where ST 2022-7 protection is modeled as two simultaneous legs in the same budgeted scope, report both legs explicitly or apply a clearly labeled 2x capacity multiplier. The report should indicate which paths carry the redundant copies.[^36][^22]
+
+### 5.4 Snapshot vs Time-Window Reporting
+
+The ST 2110 standard does not define a reporting window. However, IS-04/IS-05 maintain version-stamped state of active connections. Implementations should:[^17]
+
+- **Snapshot report:** Capture current active flow state at a point in time via IS-04 query
+- **Time-window report:** Track flow activations and deactivations over a period; report peak concurrent bandwidth
+- Distinguish between **staged** (IS-05 staged but not activated) and **active** (IS-05 activated) flows[^17]
+- Report ingress and egress separately per switch port; these can differ where multicast replication occurs[^40]
+
+---
+
+## 6. Formulas, Calculations, and Worked Examples
+
+### Calculation Rules Catalog
 
 ### 3.1 ST 2110-20 Video Essence Bandwidth (Normative Source / Informative Formula)
 
@@ -110,7 +223,7 @@ For 1080p59.94 (YCbCr-4:2:2, 10-bit, GPM):
 
 **ST 2110-20 vs ST 2022-6 efficiency comparison (from AIMS/RAVENNA):** ST 2110-20 transports active pixels only, yielding approximately 30% bandwidth saving over ST 2022-6 SDI encapsulation for equivalent signals (e.g., 1080p50: ST 2022-6 = 3.074 Gbit/s vs ST 2110-20 = 2.143 Gbit/s).[^20][^21]
 
-**Confidence: High** (formula is widely used industry reference; pgroup values are normative in ST 2110-20)
+**Confidence: Medium** (the VSF formula is a widely used informative industry reference; pgroup values and ST 2110-20-specific constraints require licensed or otherwise verified source review before formal conformance use)
 
 **Label: INFORMATIVE formula on NORMATIVE pgroup data**
 
@@ -172,7 +285,7 @@ Where:
 
 These figures include RTP/UDP/IP overhead but may not include Layer 1 Ethernet framing overhead. Treat as estimates.
 
-**Confidence: High** (core formula is derived from normative parameters in ST 2110-30 and AES67)
+**Confidence: Medium** (the raw payload formula is directly derived from sample rate, bit depth, and channel count, but ST 2110-30/AES67 conformance limits require source verification)
 
 ---
 
@@ -186,7 +299,7 @@ ST 2110-40 carries SMPTE ST 291-1 ANC data packets (VANC, captions, timecodes, A
 
 **⚠ UNVERIFIED VALUE:** No normative floor or ceiling bandwidth for ST 2110-40 flows is defined in SMPTE standards. The 50–100 kbps figure is an engineering approximation only and must be verified per deployment.
 
-**Confidence: Low** (bandwidth must be measured or estimated per specific ANC payload inventory)
+**Confidence: Low** (bandwidth should be measured or estimated per specific ANC payload inventory)
 
 ---
 
@@ -210,7 +323,7 @@ The total on-wire overhead per ST 2110 packet can be decomposed as follows:
 
 The practical significance of L1 overhead depends on packet size. For a standard 1,500-byte MTU Ethernet frame, L1 overhead is approximately 1.3% of wire bandwidth. For smaller audio packets (e.g., 192-byte payload), the percentage overhead is substantially higher — up to ~24% at minimum packet sizes.[^7]
 
-**⚠ ASSUMPTION:** ST 2110-20 video packets typically target ~1,500-byte MTU (jumbo frames may reduce overhead further). Audio packets at 1 ms/1ch/L16 are 32 bytes of payload, making overhead proportionally very large. Actual implementation packet sizes must be confirmed per sender.
+**⚠ ASSUMPTION:** ST 2110-20 video packets typically target ~1,500-byte MTU (jumbo frames may reduce overhead further). Audio packets at 1 ms/1ch/L16 are 32 bytes of payload, making overhead proportionally very large. Actual implementation packet sizes should be confirmed per sender.
 
 ---
 
@@ -218,7 +331,7 @@ The practical significance of L1 overhead depends on packet size. For a standard
 
 **Source:** SMPTE ST 2110-21:2017; EBU/IP Showcase analysis[^32][^9][^8]
 
-ST 2110-21 defines three sender types, each with normatively defined leaky bucket compliance parameters:[^11]
+Secondary ST 2110-21 guidance describes three sender types and associated leaky bucket compliance parameters. Treat the numeric values below as secondary-derived unless licensed ST 2110-21 text is attached:[^11]
 
 | Sender Type        | CMAX | VRXFULL | Typical Implementation                             | Burstiness                         |
 | ------------------ | ---- | ------- | -------------------------------------------------- | ---------------------------------- |
@@ -233,9 +346,9 @@ ST 2110-21 defines three sender types, each with normatively defined leaky bucke
 - **TDRAIN**: Inter-packet drain interval = (TFRAME / NPACKETS) × (1/β)[^9]
 - **β (Beta)**: Scaling factor in drain rate calculation (implementation-dependent; not normatively fixed)[^32]
 
-**Compliance measurement:** CINST (instantaneous bucket occupancy) must never exceed CMAX. If CPEAK > CMAX, the sender is non-compliant.[^9]
+**Compliance measurement:** Secondary guidance describes CINST as instantaneous bucket occupancy and CMAX as the comparison limit. Do not report formal ST 2110-21 non-compliance from this table alone unless the selected CMAX value is backed by licensed or otherwise verified ST 2110-21 evidence.[^9]
 
-**Critical design implication:** Wide (W) senders require significantly larger switch buffers than Narrow senders. A mixed environment with multiple simultaneous Wide senders can cause unpredictable buffer overflow if switch buffer depth is not sized for VRXFULL = 720 per concurrent Wide flow. This is a **normative requirement** from ST 2110-21.[^20][^32]
+**Critical design implication:** Wide (W) sender assumptions require significantly larger switch-buffer planning than Narrow sender assumptions in the secondary material. A mixed environment with multiple simultaneous Wide senders can cause unpredictable buffer overflow if switch buffer depth is not sized for the selected VRXFULL assumption. Treat exact VRXFULL values as secondary or Unverified until checked against licensed ST 2110-21 text.[^20][^32]
 
 ---
 
@@ -245,95 +358,66 @@ ST 2110-21 defines three sender types, each with normatively defined leaky bucke
 
 ST 2022-7 provides seamless protection switching by transmitting two identical, independent copies of each RTP stream over separate network paths (commonly called Red and Blue). The receiver buffers both and reconstructs a single output using RTP sequence numbers.[^35][^14]
 
-**Bandwidth implication:** Each flow protected by ST 2022-7 consumes **double** the bandwidth — once on each network path. Aggregate link budgets must apply a multiplier of 2× for all ST 2022-7-protected flows.[^22]
+**Bandwidth implication:** A design that transports two simultaneous protected legs consumes capacity for both legs. A 2x multiplier is a derived capacity-planning rule when both redundant copies traverse the budgeted scope, not a substitute for explicit per-leg path modeling.[^22]
 
 **⚠ ASSUMPTION — LABELED:** In a dual-network (n+n) topology, each physical network must be capable of carrying the full load independently. In a single-network ST 2022-7 implementation (requiring SDN path disjointness per IS-06), total network capacity must accommodate both streams simultaneously.[^36][^37]
 
 ---
 
-## 4. Required Inputs for engineering tools
+### Formula and Assumption Register
 
-The following inputs must be provided or confirmed before bandwidth and capacity calculations can proceed. Inputs are categorized by whether they are derivable from standards or must be operator-supplied.
-
-### 4.1 Per-Essence Inputs (Required for Each Flow)
-
-| Input Field                  | Source           | Standards Derivable? | Notes                                                    |
-| ---------------------------- | ---------------- | -------------------- | -------------------------------------------------------- |
-| Video width (pixels)         | SDP / device     | Yes (via SDP)        | From `width=` parameter                                  |
-| Video height (pixels)        | SDP / device     | Yes (via SDP)        | From `height=` parameter                                 |
-| Exact frame rate (M/N ratio) | SDP / device     | Yes                  | Use exact rational (e.g., 60000/1001 not 59.94)[^4]      |
-| Sampling format              | SDP / device     | Yes                  | YCbCr-4:2:2, 4:4:4, RGB, etc.[^4]                        |
-| Bit depth                    | SDP / device     | Yes                  | 8, 10, 12-bit; determines pgroup[^19]                    |
-| Packing mode                 | SDP / device     | Yes                  | GPM (2110GPM) or BPM; GPM recommended[^4]                |
-| Sender type (TP parameter)   | SDP / device     | Yes                  | 2110TPN, 2110TPNL, 2110TPW[^20][^38]                     |
-| Audio sample rate            | SDP / device     | Partially            | 48 kHz mandatory; 96 kHz optional[^25]                   |
-| Audio bit depth              | SDP / device     | Partially            | L16 or L24 mandatory; others optional[^5]                |
-| Audio channels per stream    | SDP / device     | No                   | 1–8 at Level A; operator must confirm                    |
-| Audio packet time            | SDP / device     | Partially            | 1 ms mandatory; 125 µs optional[^25]                     |
-| ST 2022-7 active?            | Operator / IS-05 | No                   | Doubles all bandwidth figures[^22]                       |
-| Flow activation state        | IS-04 / IS-05    | No                   | Active vs staged/inactive flows affect measurement scope |
-
-### 4.2 Per-Link / Per-Switch Inputs
-
-| Input Field                                 | Who Provides       | Notes                                          |
-| ------------------------------------------- | ------------------ | ---------------------------------------------- |
-| Physical link speed (Gbps)                  | Network topology   | 1G, 10G, 25G, 40G, 100G[^39]                   |
-| VLAN tagging in use?                        | Network config     | Adds 4 bytes per packet overhead[^28]          |
-| Switch port type (access/trunk)             | Network config     | Affects multicast replication traffic          |
-| Connected device list per port              | Network topology   | Needed for ingress/egress budgeting            |
-| Multicast group memberships                 | IGMP state / IS-06 | Determines which flows traverse each link[^40] |
-| Jumbo frames enabled?                       | Network config     | Affects per-packet L1 overhead fraction[^7]    |
-| ST 2022-7 topology (single vs dual network) | Operator           | Determines bandwidth multiplier[^36]           |
-
-### 4.3 System-Level Inputs
-
-| Input Field                                                               | Who Provides         | Notes                                                      |
-| ------------------------------------------------------------------------- | -------------------- | ---------------------------------------------------------- |
-| Target link utilization ceiling (%)                                       | Engineering policy   | No normative value exists; must be operator-defined        |
-| Safety margin (%)                                                         | Engineering policy   | Non-normative; must be labeled as assumption               |
-| PTP / management traffic budget                                           | Network design       | Typically low but non-zero; must be measured               |
-| Flow count at peak concurrency                                            | Operator / scheduler | Active vs subscribed vs reserved distinction required[^41] |
-| Routing transition model (join-before-leave, leave-before-join, hard cut) | Operator             | Affects peak bandwidth during routing changes[^41]         |
+| Calculation Name                                | Formula / Method                                                                                  | Inputs                                                       | Source Citation                                                                                             | Normative or Assumed                                                      | Confidence        |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ----------------- |
+| ST 2110-20 Video ASB (Approx. Signal Bandwidth) | Three-step pgroup formula (Section 3.1)                                                           | width, height, exactframerate, pgroupsize, pgroupcoverage    | VSF TR-05:2018 §7.2.1 (Informative section)[^4]; pgroup values from ST 2110-20:2017 §6.2.4 (Normative)[^19] | **Informative formula on normative pgroup data**                          | High              |
+| Simplified video bandwidth estimate             | Active W × H × FPS × bits/color × chroma factor × (1 + overhead%)                                 | Resolution, frame rate, bit depth, chroma format, % overhead | Vendor/industry practice only — not SMPTE[^22]                                                              | **Assumed (non-normative)**                                               | Medium            |
+| Image samples per second                        | width × height × exactframerate                                                                   | SDP parameters                                               | VSF TR-05:2018 §7.1.1[^4]                                                                                   | Informative                                                               | High              |
+| Chroma/luma samples per second                  | image-samples-per-sec × subsampling-factor                                                        | Chroma format                                                | VSF TR-05:2018 §7.1.2[^4]                                                                                   | Informative                                                               | High              |
+| Audio payload bandwidth (raw)                   | fs × (b/8) × Nc                                                                                   | Sample rate, bit depth, channel count                        | ST 2110-30:2017; AES67-2018[^5]                                                                             | Normative parameters; formula is derived                                  | High              |
+| Audio packet overhead                           | 40 bytes (IP+UDP+RTP) per packet                                                                  | Fixed per RFC 3550, RFC 768, RFC 791                         | RFC 3550[^6]; RFC 2508[^47]                                                                                 | Normative (protocol header sizes)                                         | High              |
+| Ethernet L2 overhead                            | 14 (header) + 4 (FCS) = 18 bytes/frame; +4 if VLAN                                                | Fixed per IEEE 802.3                                         | IEEE 802.3[^7][^28]                                                                                         | Normative                                                                 | High              |
+| Ethernet L1 overhead                            | 7 (Preamble) + 1 (SFD) + 12 (IFG) = 20 bytes/frame                                                | Fixed per IEEE 802.3                                         | IEEE 802.3[^7]                                                                                              | Normative                                                                 | High              |
+| ST 2022-7 bandwidth multiplier                  | 2x when both redundant legs traverse the budgeted scope; otherwise model each leg explicitly      | ST 2022-7 active flag, leg paths, failure domains            | SMPTE ST 2022-7 metadata[^14]; implementation refs[^22]                                                     | Derived capacity-planning consequence; exact topology handling is assumed | Medium            |
+| ST 2110-21 Narrow/NL CMAX                       | CMAX = 4, VRXFULL = 8 when validated from licensed ST 2110-21 text or accepted secondary input    | Sender type = N or NL                                        | Secondary ST 2110-21 analysis[^8][^9]                                                                       | Secondary / Unverified until licensed review                              | Medium            |
+| ST 2110-21 Wide CMAX                            | CMAX = 16, VRXFULL = 720 when validated from licensed ST 2110-21 text or accepted secondary input | Sender type = W                                              | Secondary ST 2110-21 analysis[^8][^9]                                                                       | Secondary / Unverified until licensed review                              | Medium            |
+| ST 2110-21 Drain rate (TDRAIN)                  | (TFRAME / NPACKETS) x (1/beta)                                                                    | Frame period, packet count, beta factor                      | EBU / IP Showcase analysis of ST 2110-21[^9]                                                                | Secondary structure; beta is implementation-dependent                     | Medium            |
+| Aggregate link utilization ceiling              | No formula — engineering policy                                                                   | Link speed, total active flow bandwidth                      | **No normative standard defines this**                                                                      | **Assumed — engineering policy**                                          | Low (no standard) |
+| Safety margin percentage                        | No formula — engineering policy                                                                   | Operator-defined                                             | **No normative standard defines this**                                                                      | **Assumed — engineering policy**                                          | Low (no standard) |
+| ST 2110-40 ANC flow bandwidth                   | 50–100 kbps per flow (estimated range)                                                            | ANC payload inventory                                        | Observational reference only[^31][^30]                                                                      | **Assumed / Unverified**                                                  | Low               |
+| PTP / management traffic                        | Not calculable from standards                                                                     | Measured or estimated                                        | **Implementation-dependent**                                                                                | **Unverified**                                                            | Low               |
 
 ---
 
-## 5. Derived Outputs and Reporting Requirements
+## 7. Interoperability Risks and Ambiguity Register
 
-### 5.1 Per-Essence Bandwidth Output
+### Risk 1: Wide (W) Sender Burst Risk
 
-For each defined essence flow, Engineering tools should output:
+Secondary guidance describes Wide senders as exhibiting significantly greater burstiness, commonly modeled with CMAX = 16 and VRXFULL = 720, compared to Narrow senders. A facility with multiple concurrent software-based graphics generators, virtual production systems, or cloud-native senders may have predominantly Wide sources. If switch buffers are sized for Narrow/NL assumptions only, Wide sender bursts can cause packet loss even when average link utilization is below capacity. **Mitigation:** Inventory TP parameter from SDP for all senders; flag all Wide senders; size buffers accordingly.[^20][^8]
 
-- **ASB (Mbit/s):** Calculated using VSF TR-05 formula; labeled as Informative[^4]
-- **Packets per second:** Derived from packets_per_frame × frame_rate (video) or 1/packet_time (audio)
-- **Transport overhead add-on:** IP/UDP/RTP = 40 bytes per packet; L2 = 18 bytes; L1 = 20 bytes[^6][^7]
-- **Wire-rate bandwidth:** ASB adjusted for total header overhead
-- **Sender type declared:** N, NL, or W — affects switch buffer requirement[^8]
+### Risk 2: Multicast Replication at Spine-Leaf Boundaries
 
-### 5.2 Aggregate Link Budget Output
+In spine-leaf topologies, a single inbound multicast stream may be replicated to multiple egress ports at a spine switch. Total egress bandwidth from a spine can exceed the single ingress flow bandwidth by a factor equal to the number of subscribed receivers. Link budgets must model egress traffic, not just ingress.[^37]
 
-For each monitored link:
+### Risk 3: Join-Before-Leave Transition Bandwidth
 
-- **Sum of active ingress flows × bandwidth per flow:** This is the active bandwidth load
-- **Comparison against physical link capacity**
-- **Utilization percentage:** (Active bandwidth / Link capacity) × 100
-- **Available headroom:** Link capacity − active bandwidth − management/control traffic reserve
+When IS-05 triggers a routing change with join-before-leave behavior, two active flows coexist briefly on the receiving link — double the expected bandwidth. In a high-density routing environment, simultaneous routing changes can temporarily spike aggregate link bandwidth beyond design capacity. This is **not addressed normatively** in ST 2110 and is an engineering risk that must be managed via routing policy.[^41]
 
-### 5.3 ST 2022-7 Adjusted Output
+### Risk 4: PTP Grandmaster and Management Traffic Underestimation
 
-Where ST 2022-7 is active, all flow bandwidths must be reported as doubled, and the report must clearly indicate which paths carry the redundant copies.[^36][^22]
+PTP (IEEE 1588 / ST 2059) synchronization traffic, IGMP membership reports, IS-04 heartbeats, and IS-05 API traffic all consume link bandwidth. These are typically low per-flow but can accumulate in high-density systems. They are **not included** in ASB calculations and must be budgeted separately or accounted for in safety margins.[^45][^17]
 
-### 5.4 Snapshot vs Time-Window Reporting
+### Risk 5: SDP Parameter Discrepancy
 
-The ST 2110 standard does not define a reporting window. However, IS-04/IS-05 maintain version-stamped state of active connections. Engineering tools should:[^17]
+Bandwidth calculations are only as reliable as the SDP parameters they are derived from. If a device reports incorrect SDP metadata (e.g., mismatched exactframerate or incorrect TP value), calculated bandwidth will not match actual wire traffic. Implementations should cross-validate calculated bandwidth against live measurement where possible.
 
-- **Snapshot report:** Capture current active flow state at a point in time via IS-04 query
-- **Time-window report:** Track flow activations and deactivations over a period; report peak concurrent bandwidth
-- Distinguish between **staged** (IS-05 staged but not activated) and **active** (IS-05 activated) flows[^17]
-- Report ingress and egress separately per switch port; these can differ where multicast replication occurs[^40]
+### Risk 6: Compressed Video (ST 2110-22) Bandwidth Variability
+
+SMPTE ST 2110-22 defines transport for Constant Bit Rate (CBR) compressed video. If ST 2110-22 flows are present in the monitored system, their bandwidth is codec-dependent and cannot be calculated from the ST 2110-20 ASB formula. This is **implementation-dependent** and requires encoder specification data.[^46]
 
 ---
 
-## 6. Link-Level and Switch-Level Modeling Guidance
+## 8. Implementation Guidance
+
+### Link-Level and Switch-Level Modeling Guidance
 
 ### 6.1 Link-Level Capacity Model
 
@@ -349,10 +433,10 @@ This is an **engineering guidance statement** (not a normative standard), but it
 
 ### 6.2 Switch-Level Capacity Model
 
-Switches must be sized for:
+Switches should be sized using explicit source-backed or operator-selected assumptions for:
 
 1. **Total forwarding bandwidth:** Sum of all simultaneously active multicast streams passing through the switch fabric
-2. **Packet buffer depth per port:** Must accommodate VRXFULL = 720 packets for Wide senders; VRXFULL = 8 for Narrow/NL senders[^8]
+2. **Packet buffer depth per port:** Should account for selected sender-type assumptions, such as VRXFULL = 720 for Wide senders and VRXFULL = 8 for Narrow/NL senders when those values are accepted from licensed or secondary evidence[^8]
 3. **Multicast replication capacity:** One ingress multicast flow may be replicated to N egress ports; internal switching fabric must support this without head-of-line blocking[^40][^41]
 4. **IGMP snooping table size:** Must accommodate all multicast group memberships; overflow causes flooding[^40]
 
@@ -360,7 +444,7 @@ Switches must be sized for:
 
 ### 6.3 Connected Device Count vs Flow Count
 
-The number of physical devices connected to a switch does not directly determine bandwidth load. A single device may originate multiple simultaneous flows (e.g., one 1080p59.94 video flow + multiple 8-channel audio flows + one ANC flow). Conversely, a device may be subscribed to many inbound flows simultaneously. Engineering tools must model at the **flow level**, not the device level, and must know:
+The number of physical devices connected to a switch does not directly determine bandwidth load. A single device can originate multiple simultaneous flows (e.g., one 1080p59.94 video flow + multiple 8-channel audio flows + one ANC flow). Conversely, a device may be subscribed to many inbound flows simultaneously. Implementations should model at the **flow level**, not the device level, and should record:
 
 - Number of active sender flows per device
 - Number of active receiver subscriptions per device
@@ -368,9 +452,9 @@ The number of physical devices connected to a switch does not directly determine
 
 ---
 
-## 7. Validation Checklist for Capacity Planning
+## 9. Validation Checklist
 
-The following checks must pass before a capacity planning report is considered valid.
+The following checks should pass before a capacity planning report is considered valid.
 
 ### Formula and Input Validation
 
@@ -403,35 +487,7 @@ The following checks must pass before a capacity planning report is considered v
 
 ---
 
-## 8. Risk Notes and Ambiguity Areas
-
-### Risk 1: Wide (W) Sender Burst Risk
-
-Wide senders are permitted to exhibit significantly greater burstiness (CMAX = 16, VRXFULL = 720) compared to Narrow senders. A facility with multiple concurrent software-based graphics generators, virtual production systems, or cloud-native senders may have predominantly Wide sources. If switch buffers are sized for Narrow/NL assumptions only, Wide sender bursts can cause packet loss even when average link utilization is below capacity. **Mitigation:** Inventory TP parameter from SDP for all senders; flag all Wide senders; size buffers accordingly.[^20][^8]
-
-### Risk 2: Multicast Replication at Spine-Leaf Boundaries
-
-In spine-leaf topologies, a single inbound multicast stream may be replicated to multiple egress ports at a spine switch. Total egress bandwidth from a spine can exceed the single ingress flow bandwidth by a factor equal to the number of subscribed receivers. Link budgets must model egress traffic, not just ingress.[^37]
-
-### Risk 3: Join-Before-Leave Transition Bandwidth
-
-When IS-05 triggers a routing change with join-before-leave behavior, two active flows coexist briefly on the receiving link — double the expected bandwidth. In a high-density routing environment, simultaneous routing changes can temporarily spike aggregate link bandwidth beyond design capacity. This is **not addressed normatively** in ST 2110 and is an engineering risk that must be managed via routing policy.[^41]
-
-### Risk 4: PTP Grandmaster and Management Traffic Underestimation
-
-PTP (IEEE 1588 / ST 2059) synchronization traffic, IGMP membership reports, IS-04 heartbeats, and IS-05 API traffic all consume link bandwidth. These are typically low per-flow but can accumulate in high-density systems. They are **not included** in ASB calculations and must be budgeted separately or accounted for in safety margins.[^45][^17]
-
-### Risk 5: SDP Parameter Discrepancy
-
-Bandwidth calculations are only as reliable as the SDP parameters they are derived from. If a device reports incorrect SDP metadata (e.g., mismatched exactframerate or incorrect TP value), calculated bandwidth will not match actual wire traffic. Engineering tools should cross-validate calculated bandwidth against live measurement where possible.
-
-### Risk 6: Compressed Video (ST 2110-22) Bandwidth Variability
-
-SMPTE ST 2110-22 defines transport for Constant Bit Rate (CBR) compressed video. If ST 2110-22 flows are present in the monitored system, their bandwidth is codec-dependent and cannot be calculated from the ST 2110-20 ASB formula. This is **implementation-dependent** and requires encoder specification data.[^46]
-
----
-
-## 9. Open Questions / Unverified Items
+## 10. Open Questions / Unverified Items
 
 The following items could not be confirmed from primary normative sources and are flagged as requiring verification or operator input:
 
@@ -445,34 +501,13 @@ The following items could not be confirmed from primary normative sources and ar
 | Actual packet size per sender implementation                  | **Implementation-dependent**                    | Vendors may use MTU other than 1,500 bytes; jumbo frames alter overhead fractions[^7]                               |
 | ST 2110-22 compressed flow bandwidth                          | **Codec-dependent**                             | Requires encoder configuration data; not calculable from essence parameters alone                                   |
 | Dual vs single network for ST 2022-7                          | **Topology-dependent**                          | Bandwidth doubling applies to both, but path routing behavior differs[^36][^37]                                     |
-| Number of IGMP table entries per switch                       | **Vendor-dependent**                            | Overflow results in multicast flooding; must be validated against switch ASIC specifications                        |
+| Number of IGMP table entries per switch                       | **Vendor-dependent**                            | Overflow results in multicast flooding; should be validated against switch ASIC specifications                      |
 
 ---
 
-## 10. Formula and Assumption Register
+## 11. Sources
 
-| Calculation Name                                | Formula / Method                                                  | Inputs                                                       | Source Citation                                                                                             | Normative or Assumed                                              | Confidence        |
-| ----------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------- |
-| ST 2110-20 Video ASB (Approx. Signal Bandwidth) | Three-step pgroup formula (Section 3.1)                           | width, height, exactframerate, pgroupsize, pgroupcoverage    | VSF TR-05:2018 §7.2.1 (Informative section)[^4]; pgroup values from ST 2110-20:2017 §6.2.4 (Normative)[^19] | **Informative formula on normative pgroup data**                  | High              |
-| Simplified video bandwidth estimate             | Active W × H × FPS × bits/color × chroma factor × (1 + overhead%) | Resolution, frame rate, bit depth, chroma format, % overhead | Vendor/industry practice only — not SMPTE[^22]                                                              | **Assumed (non-normative)**                                       | Medium            |
-| Image samples per second                        | width × height × exactframerate                                   | SDP parameters                                               | VSF TR-05:2018 §7.1.1[^4]                                                                                   | Informative                                                       | High              |
-| Chroma/luma samples per second                  | image-samples-per-sec × subsampling-factor                        | Chroma format                                                | VSF TR-05:2018 §7.1.2[^4]                                                                                   | Informative                                                       | High              |
-| Audio payload bandwidth (raw)                   | fs × (b/8) × Nc                                                   | Sample rate, bit depth, channel count                        | ST 2110-30:2017; AES67-2018[^5]                                                                             | Normative parameters; formula is derived                          | High              |
-| Audio packet overhead                           | 40 bytes (IP+UDP+RTP) per packet                                  | Fixed per RFC 3550, RFC 768, RFC 791                         | RFC 3550[^6]; RFC 2508[^47]                                                                                 | Normative (protocol header sizes)                                 | High              |
-| Ethernet L2 overhead                            | 14 (header) + 4 (FCS) = 18 bytes/frame; +4 if VLAN                | Fixed per IEEE 802.3                                         | IEEE 802.3[^7][^28]                                                                                         | Normative                                                         | High              |
-| Ethernet L1 overhead                            | 7 (Preamble) + 1 (SFD) + 12 (IFG) = 20 bytes/frame                | Fixed per IEEE 802.3                                         | IEEE 802.3[^7]                                                                                              | Normative                                                         | High              |
-| ST 2022-7 bandwidth multiplier                  | ×2 for each ST 2022-7-protected flow                              | ST 2022-7 active flag                                        | SMPTE ST 2022-7[^14]; implementation refs[^22]                                                              | Normative behavior; bandwidth doubling is a necessary consequence | High              |
-| ST 2110-21 Narrow/NL CMAX                       | CMAX = 4, VRXFULL = 8                                             | Sender type = N or NL                                        | SMPTE ST 2110-21:2017[^8][^9]                                                                               | **Normative**                                                     | High              |
-| ST 2110-21 Wide CMAX                            | CMAX = 16, VRXFULL = 720                                          | Sender type = W                                              | SMPTE ST 2110-21:2017[^8][^9]                                                                               | **Normative**                                                     | High              |
-| ST 2110-21 Drain rate (TDRAIN)                  | (TFRAME / NPACKETS) × (1/β)                                       | Frame period, packet count, β factor                         | EBU / IP Showcase analysis of ST 2110-21[^9]                                                                | Normative structure; β is implementation-dependent                | Medium            |
-| Aggregate link utilization ceiling              | No formula — engineering policy                                   | Link speed, total active flow bandwidth                      | **No normative standard defines this**                                                                      | **Assumed — engineering policy**                                  | Low (no standard) |
-| Safety margin percentage                        | No formula — engineering policy                                   | Operator-defined                                             | **No normative standard defines this**                                                                      | **Assumed — engineering policy**                                  | Low (no standard) |
-| ST 2110-40 ANC flow bandwidth                   | 50–100 kbps per flow (estimated range)                            | ANC payload inventory                                        | Observational reference only[^31][^30]                                                                      | **Assumed / Unverified**                                          | Low               |
-| PTP / management traffic                        | Not calculable from standards                                     | Measured or estimated                                        | **Implementation-dependent**                                                                                | **Unverified**                                                    | Low               |
-
----
-
-## Sources
+### Source Summary
 
 Primary normative standards referenced:
 
@@ -509,7 +544,7 @@ Secondary / informative references:
 
 ---
 
-## References
+### References
 
 1. [SMPTE ST 2110 FAQ | Society of Motion Picture & Television ...](https://www.smpte.org/smpte-st-2110-faq) - The SMPTE ST 2110 standards suite specifies the carriage, synchronization, and description of separa...
 

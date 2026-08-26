@@ -100,7 +100,7 @@ Adapt these sections to the topic, but preserve the intent:
 
 - Recommended fields, checks, and report outputs
 - How to model unverified or externally supplied values
-- Validation rules suitable for engineering tools
+- Validation rules suitable for implementations and agent-context consumers
 
 # Required Output Structure
 

@@ -1,35 +1,47 @@
 # Technical Research Reference
 
-This workspace contains standalone, citation-backed technical reference reports. The reports are intended to preserve enough standards and engineering context for future AI-assisted work without depending on project history, chat context, or a consuming repository.
+This workspace contains standalone, citation-backed technical reference reports. The reports preserve enough standards and engineering context for future AI-assisted work without depending on project history, chat context, or a consuming repository.
 
 ## Goals
 
 - Preserve dry, high-density technical context in markdown.
-- Keep normative requirements separate from best practice, assumptions, and unverified items.
-- Include formulas, worked examples, validation rules, and implementation implications directly in reports.
-- Record source versions, access limitations, and confidence levels.
+- Keep normative requirements separate from best practice, assumptions, secondary sources, derived values, and unverified items.
+- Include formulas, worked examples, validation rules, and implementation implications directly in the owning report.
+- Record source versions, access limitations, confidence levels, and source visibility.
 - Keep consumer-specific integration details outside this repository.
 
 ## Structure
 
-- `report-*.md` - generated or converted standalone reference reports.
-- `prompts/template-new-topic.md` - reusable prompt for creating a new topic report.
-- `prompts/template-convert-existing-context.md` - reusable prompt for converting existing context into the standard report shape.
-- `prompts/template-routine-update.md` - reusable prompt for researching source changes and producing controlled report updates.
-- `report-template.md` - required report contract and section structure.
-- `manifest.md` - report inventory, status, source access, and regeneration policy.
-- `qa-checklist.md` - post-generation review checklist.
+- `reports/` - standalone domain reports organized by topic.
+- `.creation/prompts/template-new-topic.md` - reusable prompt for creating a new topic report.
+- `.creation/prompts/template-convert-existing-context.md` - reusable prompt for converting existing context into the standard report shape.
+- `.creation/prompts/template-routine-update.md` - reusable prompt for researching source changes and producing controlled report updates.
+- `.creation/report-template.md` - required report contract and section structure.
+- `.creation/manifest.md` - report inventory, status, source access, and regeneration policy.
+- `.creation/qa-checklist.md` - post-generation review checklist.
 
 ## Report Inventory
 
-| Report | Topic | Status |
-| ------ | ----- | ------ |
-| `report-master.md` | Cross-domain ST 2110, PTP, bandwidth, and NMOS synthesis | Converted reference |
-| `report-st2110.md` | ST 2110 transport and essence | Converted reference |
-| `report-ptp.md` | PTP timing and synchronization | Converted reference |
-| `report-bandwidth.md` | ST 2110 bandwidth and capacity calculations | Converted reference |
-| `report-aes67.md` | AES67 IP audio interoperability | Converted reference |
-| `report-ttml.md` | TTML and IMSC timed text | Converted reference |
+| Report | Topic | Ownership |
+| ------ | ----- | --------- |
+| `reports/st2110/overview.md` | ST 2110 overview and cross-domain context | Navigation and synthesis only; detailed claims live in domain reports. |
+| `reports/st2110/transport-and-essence.md` | ST 2110 transport and essence | ST 2110 parts, RTP essence model, video/audio/ANC flow boundaries, and conformance limits. |
+| `reports/st2110/bandwidth-and-capacity.md` | ST 2110 bandwidth and capacity calculations | Formulas, packet overhead, capacity assumptions, worked examples, and link-budget risks. |
+| `reports/audio/aes67.md` | AES67 IP audio interoperability | Generic AES67 audio behavior and ST 2110-30 compatibility caveats. |
+| `reports/timing/ptp.md` | PTP timing and synchronization | IEEE 1588, ST 2059, RTP clock signaling, timing validation, and timing risk model. |
+| `reports/timed-text/ttml-imsc.md` | TTML and IMSC timed text | TTML, IMSC, DAPT, timing/styling/layout validation, and profile semantics. |
+
+## Overlap Policy
+
+Each report should stand alone. Short repeated context is acceptable when it is needed to understand the report without another file, but detailed treatment belongs to the owning report listed above.
+
+Common overlap boundaries:
+
+- RTP/SDP facts may appear in ST 2110, AES67, PTP, and bandwidth reports, but must be scoped to the local report purpose.
+- PTP timing architecture belongs in `reports/timing/ptp.md`; other reports should keep timing summaries short.
+- AES67 belongs in `reports/audio/aes67.md`; ST 2110-30-specific broadcast constraints belong in `reports/st2110/transport-and-essence.md`.
+- Bandwidth formulas and worked examples belong in `reports/st2110/bandwidth-and-capacity.md`.
+- TTML/IMSC belongs in `reports/timed-text/ttml-imsc.md`, not under the ST 2110 topic tree.
 
 ## Standard Workflow
 
@@ -49,7 +61,7 @@ flowchart TD
 
 ## Creating A New Report
 
-Use `prompts/template-new-topic.md` when the topic is not already captured in a report.
+Use `.creation/prompts/template-new-topic.md` when the topic is not already captured in a report.
 
 The output must:
 
@@ -61,7 +73,7 @@ The output must:
 
 ## Converting Existing Context
 
-Use `prompts/template-convert-existing-context.md` when turning notes, prior reports, old prompt outputs, or memory documents into a standalone report.
+Use `.creation/prompts/template-convert-existing-context.md` when turning notes, prior reports, old prompt outputs, or memory documents into a standalone report.
 
 The conversion must:
 
@@ -72,7 +84,7 @@ The conversion must:
 
 ## Routine Updates
 
-Use `prompts/template-routine-update.md` when a source changes or new public documentation becomes available.
+Use `.creation/prompts/template-routine-update.md` when a source changes or new public documentation becomes available.
 
 The update must:
 
