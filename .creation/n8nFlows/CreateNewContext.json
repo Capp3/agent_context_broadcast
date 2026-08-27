@@ -1,0 +1,605 @@
+{
+  "name": "CreateNewContext",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "New Broadcast Context",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Topic",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Domain",
+              "fieldType": "textarea",
+              "defaultValue": "Broadcast Engineering",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -176,
+        432
+      ],
+      "id": "d12f05c4-f154-498a-91fb-f19da1356dab",
+      "name": "On form submission",
+      "webhookId": "ae2c39b2-1990-46e0-a2fb-ce0199d0535e"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9b2c16ff-9ee7-447c-8299-8bb3600dda14",
+              "name": "sessionId",
+              "value": "={{ $workflow.id }}-{{ $execution.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        432
+      ],
+      "id": "f4db4f88-027e-4a37-8242-61aef5f31b55",
+      "name": "GenerateId"
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar-reasoning-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        568,
+        648
+      ],
+      "id": "c9ff228d-ea22-4107-8a91-d199847fdcc9",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TPAM9U1UtoHsWB7V",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        848,
+        432
+      ],
+      "id": "e1104dbb-5dbb-467b-9b82-983c96b46122",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "fromEmail": "dcapp3@gmail.com",
+        "toEmail": "dcapp3@icloud.com",
+        "subject": "Topic Apprival",
+        "message": "={{ $json.data }}",
+        "approvalOptions": {
+          "values": {}
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1072,
+        432
+      ],
+      "id": "30da217f-d1c5-45ed-a25c-93cda7e37f96",
+      "name": "Send message and wait for response",
+      "webhookId": "3ed7d8de-3633-486c-95d7-2b99b5313720",
+      "credentials": {
+        "smtp": {
+          "id": "RryYcWzBVNnYoPao",
+          "name": "SMTP Gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6b0dce64-d1d6-4212-8267-d9a27a0abf32",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1296,
+        432
+      ],
+      "id": "c0b3f6dd-685b-4ec5-9ca6-dc99a51baaf5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Not Approved"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        576
+      ],
+      "id": "709c2920-0ec5-4155-ae07-d3ec55d30915",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/Capp3/agent_context_broadcast/git/trees/main?recursive=1",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2096,
+        288
+      ],
+      "id": "d801d64e-f719-469b-b0c7-0350860769dc",
+      "name": "Get Github Files",
+      "credentials": {
+        "githubApi": {
+          "id": "5EpFBZdEObP25ySQ",
+          "name": "GitHub Capp3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function normalizeEntries(rawItems) {\n  const flat = [];\n\n  for (const item of rawItems) {\n    const j = item.json;\n\n    // Case 1: recursive Git Tree API body\n    if (j && Array.isArray(j.tree)) {\n      for (const t of j.tree) {\n        if (!t.path || !t.path.startsWith('reports/')) continue;\n        flat.push({\n          path: t.path,\n          type: t.type === 'tree' ? 'dir' : 'file',\n        });\n      }\n      continue;\n    }\n\n    // Case 2: whole Contents array sitting in one item\n    if (Array.isArray(j)) {\n      for (const row of j) {\n        if (!row || !row.name) continue;\n        flat.push({\n          path: row.path || ('reports/' + row.name),\n          type: row.type === 'dir' || row.type === 'tree' ? 'dir' : 'file',\n        });\n      }\n      continue;\n    }\n\n    // Case 3: normal n8n split items (one file/dir per item)\n    if (j && j.name) {\n      flat.push({\n        path: j.path || ('reports/' + j.name),\n        type: j.type === 'dir' || j.type === 'tree' ? 'dir' : 'file',\n      });\n    }\n  }\n\n  return flat;\n}\n\nfunction buildMarkdownTree(entries) {\n  const lines = ['```text', 'reports/'];\n  const byParent = {};\n\n  for (const e of entries) {\n    const parts = e.path.split('/');\n    const parent = parts.length <= 2 ? 'reports' : parts.slice(0, -1).join('/');\n    const name = parts[parts.length - 1];\n    if (!byParent[parent]) byParent[parent] = [];\n    byParent[parent].push({ name: name, type: e.type, path: e.path });\n  }\n\n  function walk(parentPath, depth) {\n    const kids = byParent[parentPath] || [];\n    kids.sort(function (a, b) {\n      if (a.type !== b.type) return a.type === 'dir' ? -1 : 1;\n      return a.name.localeCompare(b.name);\n    });\n\n    for (const kid of kids) {\n      const indent = '  '.repeat(depth);\n      lines.push(indent + kid.name + (kid.type === 'dir' ? '/' : ''));\n      if (kid.type === 'dir') walk(kid.path, depth + 1);\n    }\n  }\n\n  walk('reports', 1);\n  lines.push('```');\n  return lines.join('\\n');\n}\n\nconst entries = normalizeEntries($input.all());\nentries.sort(function (a, b) {\n  return a.path.localeCompare(b.path);\n});\n\nreturn [\n  {\n    json: {\n      folderTreeMarkdown: buildMarkdownTree(entries),\n      entryCount: entries.length,\n      paths: entries.map(function (e) { return e.path; }),\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        288
+      ],
+      "id": "c00924a3-d945-4b44-beb1-dde7a25acc14",
+      "name": "Create Tree"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2dfa6684-89ba-4c4e-9d82-491ca14dfce9",
+              "name": "chatInput",
+              "value": "=You categorize new technical research reports for a GitHub repository of standalone markdown agent-context reports.\n\n## Task\nGiven:\n1) the existing reports layout\n2) a short description of the new report topic\n\nDecide where the new report should live under reports/.\n\n## Rules\n1. Prefer an existing directory under reports/ when the topic clearly fits.\n2. Create a new directory under reports/ only when no existing directory is a good fit.\n3. Directory names must be lowercase kebab-case, short, and topic-based (examples: audio, timing, timed-text, st2110).\n4. Filename must be lowercase kebab-case and end with .md\n5. Filename should describe the report topic, not include dates or version numbers.\n6. Do not overwrite an existing file path. If a similar name exists, choose a distinct filename.\n7. report_path must be relative and start with reports/\n8. report_path must equal report_dir + \"/\" + filename\n9. Do not invent files outside reports/\n10. Return JSON only. No markdown fences. No commentary.\n\n## Existing layout\n{{ $json.folderTreeMarkdown }}\n\n## Existing paths\n{{ $json.paths.join('\\n') }}\n\n## New report topic\n{{ $('On form submission').item.json.Topic }} in {{ $('On form submission').item.json.Domain }}\n\n## Optional topic summary\n{{ $('Set Summary').item.json.reportsummary }}\n\n## Required JSON schema\n{\n  \"filename\": \"string ending in .md\",\n  \"report_dir\": \"reports/<existing-or-new-dir>\",\n  \"report_path\": \"reports/<dir>/<filename>.md\",\n  \"create_dir\": true,\n  \"reason\": \"one short sentence\"\n}\n\n## create_dir\n- true if report_dir does not already exist in the layout\n- false if report_dir already exists\n\n## Examples\nExisting dirs: reports/audio, reports/timing, reports/st2110, reports/timed-text\n\nTopic: \"AES67 packet time interoperability\"\n->\n{\"filename\":\"aes67-packet-time.md\",\"report_dir\":\"reports/audio\",\"report_path\":\"reports/audio/aes67-packet-time.md\",\"create_dir\":false,\"reason\":\"Fits existing audio interoperability reports.\"}\n\nTopic: \"AMWA NMOS IS-04 discovery\"\n->\n{\"filename\":\"nmos-is04-discovery.md\",\"report_dir\":\"reports/nmos\",\"report_path\":\"reports/nmos/nmos-is04-discovery.md\",\"create_dir\":true,\"reason\":\"No existing NMOS directory; control-plane topic needs its own folder.\"}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2544,
+        288
+      ],
+      "id": "350d2c9c-79e7-4e87-b8df-038a6df680d0",
+      "name": "Set Prompt1"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-v4-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        672
+      ],
+      "id": "d00db805-fb4e-4f15-93b4-951c031f56b7",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "TPAM9U1UtoHsWB7V",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        496,
+        432
+      ],
+      "id": "e4cb24c0-6407-4cdf-b276-5bd2600522a0",
+      "name": "Research Report Writer"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "caaff9e2-65b1-4cb7-a8fe-6c00e2a3ea86",
+              "name": "chatInput",
+              "value": "=# Role\n\nYou are a technical standards and engineering-reference analyst for the topic named below.\n\n- Topic: {{ $json.Topic }}\n- Domain: {{ $json.Domain }}\n- Intended use: standalone technical reference for future AI-assisted engineering work\n\n# Objective\n\nProduce a high-trust, citation-backed technical reference report that can stand on its own without project-specific context. The report must explain what is normatively required, what is best practice, what is implementation-dependent, and what remains unverified.\n\nThe report must include enough directly usable technical content that a future reader or LLM does not need to perform fresh research for basic functions. Include formulas, inputs, definitions, constraints, worked examples, and validation rules directly in the report when they are source-backed.\n\n# Metadata To Capture\n\nAt the top of the report, include frontmatter:\n\n```yaml\n---\nreport_id: <stable-kebab-case-id>\ntitle: <report title>\ntopic: <topic name>\nreport_version: 0.1.0\ngenerated_date: <YYYY-MM-DD>\nsource_access: public | licensed | mixed | unknown\nsource_cutoff: <date or \"unknown\">\nprompt_template: template-new-topic.md\nprompt_template_version: 0.1.0\nstatus: draft | reviewed | superseded\n---\n```\n\n# Non-Negotiable Accuracy Rules\n\n1. No guessing.\n2. No uncited technical claims.\n3. Do not invent formulas, constants, limits, or tables.\n4. Distinguish normative requirements from best practice, assumptions, and implementation guidance.\n5. Mark unknowns as `Unverified`.\n6. Preserve conflicts between sources; do not silently reconcile contradictions.\n7. Include source versions, publication dates, editions, and access limitations.\n8. Use exact clause, section, table, figure, or appendix references whenever available.\n\n# Source Priority\n\n1. Primary standards, specifications, RFCs, official schema repositories, or official API docs.\n2. Normative dependencies explicitly referenced by primary sources.\n3. Official errata, implementation conformance statements, test suites, or profile documents.\n4. Official engineering reports, best-current-practice documents, and maintainer guidance.\n5. Vendor, alliance, blog, conference, or forum material only as secondary implementation context.\n\n# Research Scope\n\nAdapt these sections to the topic, but preserve the intent:\n\n## A) Scope And Boundaries\n\n- What the topic standardizes\n- What it explicitly does not standardize\n- Adjacent standards, profiles, dependencies, and common misconceptions\n- Source access limitations and paywalled or hidden normative text\n\n## B) Standards And Source Map\n\n- Primary documents and versions\n- Normative dependencies\n- Profiles, amendments, errata, and draft status\n- Source confidence and clause-level visibility\n\n## C) Normative Requirements\n\n- Must/shall requirements with citations\n- Requirement IDs for later reference\n- Applicability to senders, receivers, controllers, networks, processors, files, schemas, or operators\n- Consequences if violated\n\n## D) Engineering Model\n\n- Core objects, fields, states, and relationships\n- Data-flow, timing-flow, control-flow, or document-flow semantics\n- Boundary between standards-derived behavior and implementation policy\n\n## E) Formulas, Calculations, And Worked Examples\n\n- All relevant formulas in full notation\n- Required inputs and units\n- Rounding, integer, clock, rate, or precision rules\n- Worked examples with intermediate values\n- Confidence and normative status for each formula\n\n## F) Interoperability Risks And Ambiguities\n\n- Common divergence points\n- Source conflicts\n- Profile/version mismatch risks\n- Optional features that are often mistaken for mandatory behavior\n\n## G) Implementation Guidance\n\n- Recommended fields, checks, and report outputs\n- How to model unverified or externally supplied values\n- Validation rules suitable for implementations and agent-context consumers\n\n# Required Output Structure\n\n1. Executive Summary\n2. Scope and Boundaries\n3. Standards and Source Map\n4. Normative Requirements Catalog\n5. Engineering Model\n6. Formulas, Calculations, and Worked Examples\n7. Interoperability Risks and Ambiguity Register\n8. Implementation Guidance\n9. Validation Checklist\n10. Open Questions / Unverified Items\n11. Sources\n\n# Mandatory Tables\n\nInclude these tables unless the topic genuinely does not require one:\n\n## Standards And Source Map\n\nColumns:\n\n- Document\n- Version/date\n- Role\n- Source status\n- Clause-level visibility\n\n## Normative Requirements Catalog\n\nColumns:\n\n- ID\n- Requirement or rule\n- Applies to\n- Normative citation\n- Normative / best practice / assumed / unverified\n- Implementation implication\n- Confidence\n\n## Formula And Assumption Register\n\nColumns:\n\n- Calculation name\n- Formula or method\n- Inputs and units\n- Source citation\n- Normative or assumed\n- Worked example available\n- Confidence\n\n## Risk And Ambiguity Register\n\nColumns:\n\n- Risk or ambiguity\n- Evidence\n- Normative status\n- Failure symptom\n- Mitigation or modeling rule\n\n# Mermaid Guidance\n\nUse Mermaid diagrams when they clarify relationships, flows, profiles, timing, or state machines. Prefer simple diagrams that survive markdown rendering.\n\nAllowed examples:\n\n```mermaid\nflowchart TD\n    sourceDoc[Primary Source] --> requirement[Requirement Catalog]\n    requirement --> model[Engineering Model]\n    model --> validation[Validation Checklist]\n```\n\n```mermaid\nstateDiagram-v2\n    [*] --> Unknown\n    Unknown --> Verified: cited primary source\n    Unknown --> Assumed: operator policy\n    Assumed --> Verified: evidence attached\n    Verified --> Superseded: newer source\n```\n\n# Citation Format\n\n- Use inline citations for every substantive claim.\n- Include clause, section, table, figure, appendix, or schema path when available.\n- Include source version/date in the Standards and Source Map.\n- Do not cite a source only once for a whole section if multiple independent claims are made.\n- Label secondary material as secondary in the sentence or table cell where it is used.\n\n# Quality Gate\n\nBefore finalizing:\n\n1. Remove or cite every uncited technical claim.\n2. Confirm every `must`, `shall`, `required`, and `forbidden` statement maps to a normative citation or is explicitly labeled as derived implementation guidance.\n3. Confirm every formula has a source, inputs, units, and confidence.\n4. Confirm every assumption is labeled.\n5. Confirm every inaccessible, paywalled, draft, or partial source limitation is visible.\n6. Confirm diagrams render and do not introduce unsupported claims.\n7. Confirm no product-specific or consumer-repo-specific references remain.\n\n# Tone\n\nDry, technical, conservative, and implementation-oriented. Prefer explicit uncertainty over implied certainty.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        432
+      ],
+      "id": "99224778-1e9e-49bd-b886-5bf095405a0f",
+      "name": "Set Research Prompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Provide a brief executive summary of the topic of the following report. No more than 100 words, provide output in markdown\n\n# Report\n\n```md\n{{ $('Research Report Writer').item.json.output }}\n```",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1520,
+        176
+      ],
+      "id": "d069a7f9-5d71-4f79-a6d7-e8b2f362e11b",
+      "name": "Summary Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e8188e3-3470-4450-8606-402e607c6206",
+              "name": "reportsummary",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1872,
+        288
+      ],
+      "id": "59233909-ebdf-47e1-a84a-0c1d635c59f1",
+      "name": "Set Summary"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2768,
+        288
+      ],
+      "id": "7fc55b35-238b-4d93-98a8-3e723bd99bf1",
+      "name": "Sorting Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.output;\n\nconst parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;\n\nif (!parsed.filename?.endsWith('.md')) {\n  throw new Error('filename must end with .md');\n}\nif (!parsed.report_path?.startsWith('reports/')) {\n  throw new Error('report_path must start with reports/');\n}\nif (parsed.report_path !== `${parsed.report_dir}/${parsed.filename}`) {\n  throw new Error('report_path must equal report_dir/filename');\n}\n\nreturn {\n  json: {\n    filename: parsed.filename,\n    report_dir: parsed.report_dir,\n    report_path: parsed.report_path,\n    create_dir: Boolean(parsed.create_dir),\n    reason: parsed.reason,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        288
+      ],
+      "id": "0f7f4213-4492-4125-9798-4a9aa07f687a",
+      "name": "Format JSON"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "Capp3",
+          "mode": "list",
+          "cachedResultName": "Capp3",
+          "cachedResultUrl": "https://github.com/Capp3"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "agent_context_broadcast",
+          "mode": "list",
+          "cachedResultName": "agent_context_broadcast",
+          "cachedResultUrl": "https://github.com/Capp3/agent_context_broadcast"
+        },
+        "filePath": "={{ $json.report_path }}",
+        "fileContent": "={{ $('Markdown').item.json.data }}",
+        "commitMessage": "=create  {{ $json.filename }} on {{ $now }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        3344,
+        288
+      ],
+      "id": "f1c53b16-4101-46c7-9e58-dd82e69a63cd",
+      "name": "Create a file",
+      "webhookId": "65d4fe52-d376-4d79-82a7-24b18a881a04",
+      "credentials": {
+        "githubApi": {
+          "id": "5EpFBZdEObP25ySQ",
+          "name": "GitHub Capp3"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Topic": "IGMP",
+          "Domain": "Broadcast Engineering",
+          "submittedAt": "2026-08-26T21:56:32.869+01:00",
+          "formMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "GenerateId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GenerateId": {
+      "main": [
+        [
+          {
+            "node": "Set Research Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research Report Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Summary Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Github Files": {
+      "main": [
+        [
+          {
+            "node": "Create Tree",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Tree": {
+      "main": [
+        [
+          {
+            "node": "Set Prompt1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summary Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Sorting Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Report Writer": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Research Prompt": {
+      "main": [
+        [
+          {
+            "node": "Research Report Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summary Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Summary": {
+      "main": [
+        [
+          {
+            "node": "Get Github Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Prompt1": {
+      "main": [
+        [
+          {
+            "node": "Sorting Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sorting Agent": {
+      "main": [
+        [
+          {
+            "node": "Format JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format JSON": {
+      "main": [
+        [
+          {
+            "node": "Create a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "14d56ee3-ee6d-400c-8fab-7cb5bce8a328",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1c23fdf105aaacd4635cc3179c8ec8a79b1339d581cd2a8e15367d996124a9e3"
+  },
+  "nodeGroups": [],
+  "id": "zMCueLek9Ljy6ORg",
+  "tags": []
+}
