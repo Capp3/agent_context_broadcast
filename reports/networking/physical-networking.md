@@ -1,4 +1,3 @@
-```yaml
 ---
 report_id: physical-networking-broadcast-engineering
 title: Physical Networking in Broadcast Engineering (SDI and IP Media)
@@ -11,7 +10,6 @@ prompt_template: template-new-topic.md
 prompt_template_version: 0.1.0
 status: draft
 ---
-```
 
 ## 1. Executive Summary
 
@@ -27,45 +25,45 @@ Due to paywalled and partially accessible SMPTE and IEEE texts, this report prov
 
 ### 2.1 What This Topic Covers
 
-1. Serial Digital Interface (SDI) physical networking for HDTV component signals using SMPTE 292M/ST 292 over coaxial and fiber‑optic media.[3][10][11][14]  
-2. Physical networking aspects of professional media over IP using SMPTE ST 2110‑10:2022 system timing and definitions, running over Ethernet physical layers defined by IEEE 802.3 and related amendments.[4][6][7][8][12][13]  
+1. Serial Digital Interface (SDI) physical networking for HDTV component signals using SMPTE 292M/ST 292 over coaxial and fiber‑optic media.[3][10][11][14]
+2. Physical networking aspects of professional media over IP using SMPTE ST 2110‑10:2022 system timing and definitions, running over Ethernet physical layers defined by IEEE 802.3 and related amendments.[4][6][7][8][12][13]
 3. Normative requirements and best‑practice guidance for link characteristics that affect interoperability between broadcast equipment (e.g., cameras, encoders, VTRs, IP media devices).[11][14]
 
 ### 2.2 What Is Explicitly Standardized
 
-- **SMPTE 292M/ST 292 (HD-SDI)**  
-  - A bit‑serial digital coaxial and fiber‑optic interface for HDTV component signals operating at 1.485 Gb/s and 1.485/1.001 Gb/s.[10]  
-  - A transport defining a bit‑serial data structure for a digital coaxial cable interface for nominal 1.5 Gb/s component signals, SDTV signals mapped into the SMPTE 292M payload, and formatted packetized data.[3]  
-  - Source data shall be 10‑bit words, supporting either packetized data or uncompressed video sources.[3][11][14]  
-  - Total data rate shall be either 1.485 Gb/s or 1.485/1.001 Gb/s.[3][11][14]  
-  - The electrical cabling uses coaxial cable with nominal impedance of 75 Ω.[1]  
+- **SMPTE 292M/ST 292 (HD-SDI)**
+  - A bit‑serial digital coaxial and fiber‑optic interface for HDTV component signals operating at 1.485 Gb/s and 1.485/1.001 Gb/s.[10]
+  - A transport defining a bit‑serial data structure for a digital coaxial cable interface for nominal 1.5 Gb/s component signals, SDTV signals mapped into the SMPTE 292M payload, and formatted packetized data.[3]
+  - Source data shall be 10‑bit words, supporting either packetized data or uncompressed video sources.[3][11][14]
+  - Total data rate shall be either 1.485 Gb/s or 1.485/1.001 Gb/s.[3][11][14]
+  - The electrical cabling uses coaxial cable with nominal impedance of 75 Ω.[1]
   - HDTV lines are composed of two interleaved streams: luminance (Y) and chrominance (CrCb), with chrominance horizontally subsampled (4:2:2 coding).[11][14]
 
-- **SMPTE ST 2110‑10:2022 (IP media system timing and definitions)**  
-  - Devices compliant to ST 2110‑10 are interconnected at the data‑plane by a network.[4][6]  
+- **SMPTE ST 2110‑10:2022 (IP media system timing and definitions)**
+  - Devices compliant to ST 2110‑10 are interconnected at the data‑plane by a network.[4][6]
   - ST 2110‑10 defines the transport‑layer protocol, datagram size limitations, SDP requirements, and clocks along with their timing relationships for professional media over managed IP networks.[9][12]
 
-- **IEEE 802.3 and Amendments (Ethernet physical layer)**  
-  - IEEE 802.3 defines the physical layer and data link layer MAC of wired Ethernet, including transmission over coaxial cable, twisted‑pair copper, fiber‑optic cable, and electrical backplanes.[7][8]  
-  - The physical layer encodes frames for transmission and decodes received frames with modulation specified for speed of operation, transmission medium, and supported link length.[13]  
+- **IEEE 802.3 and Amendments (Ethernet physical layer)**
+  - IEEE 802.3 defines the physical layer and data link layer MAC of wired Ethernet, including transmission over coaxial cable, twisted‑pair copper, fiber‑optic cable, and electrical backplanes.[7][8]
+  - The physical layer encodes frames for transmission and decodes received frames with modulation specified for speed of operation, transmission medium, and supported link length.[13]
   - IEEE 802.3cy‑2023 further defines MAC parameters, physical layer specifications, and management objects for serial transfer of Ethernet frames at 2.5 Gb/s and 5 Gb/s over electrical backplanes (adjacent but not specifically broadcast‑oriented).[5]
 
 ### 2.3 What Is Not Explicitly Standardized (Visible Excerpts)
 
-- SMPTE 292M publicly visible excerpts do not specify end‑to‑end facility cabling practices (e.g., maximum recommended coax length, attenuation budgets) in the accessible text used here; such details are likely in sections not visible.[3][10] **Unverified**  
-- ST 2110‑10 visible excerpts do not fully specify physical network design (topology, redundancy schemes, QoS policies), focusing instead on timing, protocol, and network definitions.[4][6][9][12]  
+- SMPTE 292M publicly visible excerpts do not specify end‑to‑end facility cabling practices (e.g., maximum recommended coax length, attenuation budgets) in the accessible text used here; such details are likely in sections not visible.[3][10] **Unverified**
+- ST 2110‑10 visible excerpts do not fully specify physical network design (topology, redundancy schemes, QoS policies), focusing instead on timing, protocol, and network definitions.[4][6][9][12]
 - IEEE 802.3 descriptions accessed here do not enumerate specific broadcast profiles or application‑layer behaviors (e.g., buffer sizing for live media), only generic Ethernet physical/MAC specifications.[7][8][13][15]
 
 ### 2.4 Adjacent Standards and Common Misconceptions
 
-- SMPTE 292 expands upon SMPTE 259 and SMPTE 344, forming part of a family of serial digital interface standards; this can be misconstrued as implying full backward compatibility, which is not asserted in the accessible text.[1]  
-- RFC 3497 defines an RTP payload format for uncompressed HDTV as defined by SMPTE 292M, using the SMPTE 292M bit‑serial interface as a reference “universal medium of interchange.”[11][14] This payload format is **adjacent** to physical networking but does not itself define physical link characteristics.  
+- SMPTE 292 expands upon SMPTE 259 and SMPTE 344, forming part of a family of serial digital interface standards; this can be misconstrued as implying full backward compatibility, which is not asserted in the accessible text.[1]
+- RFC 3497 defines an RTP payload format for uncompressed HDTV as defined by SMPTE 292M, using the SMPTE 292M bit‑serial interface as a reference “universal medium of interchange.”[11][14] This payload format is **adjacent** to physical networking but does not itself define physical link characteristics.
 - IEEE 802.3 is sometimes treated in broadcast practice as implicitly guaranteeing suitability for ST 2110 media transport; accessible texts only guarantee Ethernet behavior, not media‑specific jitter or QoS constraints.[7][8][13]
 
 ### 2.5 Source Access Limitations
 
-- **SMPTE 292M/ST 292**: Official SMPTE standards are typically paywalled; the accessible DOC/PDF copies used here may reflect particular revisions and may not include the latest errata.[3][10]  
-- **SMPTE ST 2110‑10:2022**: The PDF is accessible but only limited clauses are visible in excerpts; full clause‑level details on timing and SDP requirements are not available in this summary.[4][6]  
+- **SMPTE 292M/ST 292**: Official SMPTE standards are typically paywalled; the accessible DOC/PDF copies used here may reflect particular revisions and may not include the latest errata.[3][10]
+- **SMPTE ST 2110‑10:2022**: The PDF is accessible but only limited clauses are visible in excerpts; full clause‑level details on timing and SDP requirements are not available in this summary.[4][6]
 - **IEEE 802.3‑2022 and amendments**: Official standards may be behind paywalls or require registration; accessible summaries provide scope but not full clause‑level physical layer parameters.[7][13][15]
 
 ---
@@ -114,46 +112,46 @@ Due to paywalled and partially accessible SMPTE and IEEE texts, this report prov
 
 ### 5.1 Core Objects and Link Types
 
-1. **SDI Source**: Device producing uncompressed HDTV (or mapped SDTV/packetized data) as 10‑bit words at a total data rate of 1.485 Gb/s or 1.485/1.001 Gb/s.[3][10][11][14]  
-2. **SDI Serializer/Deserializer (SerDes)**: Logic that converts bit‑parallel 10‑bit words into a bit‑serial stream for transmission over coaxial/fiber and reconstructs 10‑bit words at the receiver.[3][10]  
-3. **SDI Link (Electrical)**: 75 Ω coaxial cable segment carrying the serial bitstream defined by SMPTE 292M.[1][10]  
-4. **SDI Link (Optical)**: Fiber‑optic medium carrying the same serialized data as the coaxial interface, per SMPTE 292M HDTV interface definition.[10]  
+1. **SDI Source**: Device producing uncompressed HDTV (or mapped SDTV/packetized data) as 10‑bit words at a total data rate of 1.485 Gb/s or 1.485/1.001 Gb/s.[3][10][11][14]
+2. **SDI Serializer/Deserializer (SerDes)**: Logic that converts bit‑parallel 10‑bit words into a bit‑serial stream for transmission over coaxial/fiber and reconstructs 10‑bit words at the receiver.[3][10]
+3. **SDI Link (Electrical)**: 75 Ω coaxial cable segment carrying the serial bitstream defined by SMPTE 292M.[1][10]
+4. **SDI Link (Optical)**: Fiber‑optic medium carrying the same serialized data as the coaxial interface, per SMPTE 292M HDTV interface definition.[10]
 5. **SDI Line Structure**: Interleaved Y and CrCb streams forming each television line, with 4:2:2 subsampling of chrominance.[11][14]
 
-6. **IP Media Sender**: Device implementing ST 2110‑10 transport, timing, and SDP signaling, encapsulating media into datagrams on a managed IP network.[4][6][9][12]  
-7. **IP Media Receiver**: Device consuming ST 2110‑10 flows and reconstructing media with correct timing and clock relationships.[4][6][9][12]  
-8. **Media Network (Data-Plane)**: IP network interconnecting ST 2110‑10 compliant devices at the data-plane.[4][6]  
-9. **Ethernet PHY/MAC**: IEEE 802.3 conformant physical layer and MAC sub‑layer responsible for frame encoding, transmission, and decoding using appropriate modulation for link speed, medium, and length.[7][8][13]  
+6. **IP Media Sender**: Device implementing ST 2110‑10 transport, timing, and SDP signaling, encapsulating media into datagrams on a managed IP network.[4][6][9][12]
+7. **IP Media Receiver**: Device consuming ST 2110‑10 flows and reconstructing media with correct timing and clock relationships.[4][6][9][12]
+8. **Media Network (Data-Plane)**: IP network interconnecting ST 2110‑10 compliant devices at the data-plane.[4][6]
+9. **Ethernet PHY/MAC**: IEEE 802.3 conformant physical layer and MAC sub‑layer responsible for frame encoding, transmission, and decoding using appropriate modulation for link speed, medium, and length.[7][8][13]
 
 ### 5.2 Data-Flow Semantics (SDI)
 
-- **Source to Link**: Bit-parallel 10‑bit words derived from HDTV component signals are multiplexed and serialized to form a bit‑serial stream.[3][10]  
-- **Payload Composition**: SDTV signals and formatted packetized data may be mapped into the SMPTE 292M payload according to mapping documents; these mappings determine the precise interface clock frequency (not visible in excerpts).[3] **Unverified for detailed mapping**  
-- **Line Interleaving**: Each television line consists of interleaved luminance (Y) and chrominance (CrCb) streams; the lengths of the two streams match due to 4:2:2 subsampling.[11][14]  
+- **Source to Link**: Bit-parallel 10‑bit words derived from HDTV component signals are multiplexed and serialized to form a bit‑serial stream.[3][10]
+- **Payload Composition**: SDTV signals and formatted packetized data may be mapped into the SMPTE 292M payload according to mapping documents; these mappings determine the precise interface clock frequency (not visible in excerpts).[3] **Unverified for detailed mapping**
+- **Line Interleaving**: Each television line consists of interleaved luminance (Y) and chrominance (CrCb) streams; the lengths of the two streams match due to 4:2:2 subsampling.[11][14]
 
 ### 5.3 Data-Flow Semantics (IP Media)
 
-- **Transport Layer**: ST 2110‑10 defines a transport layer protocol for media flows, including datagram size limitations.[9][12]  
-- **Signaling**: SDP requirements govern session description and convey transport and timing attributes needed for interoperability.[9][12]  
-- **Clocks and Timing**: ST 2110‑10 defines clocks and their timing relationships, establishing how media streams are synchronized over the network.[9][12]  
+- **Transport Layer**: ST 2110‑10 defines a transport layer protocol for media flows, including datagram size limitations.[9][12]
+- **Signaling**: SDP requirements govern session description and convey transport and timing attributes needed for interoperability.[9][12]
+- **Clocks and Timing**: ST 2110‑10 defines clocks and their timing relationships, establishing how media streams are synchronized over the network.[9][12]
 - **Network Interconnection**: Devices compliant to ST 2110‑10 are interconnected at the data-plane by a network; traffic flows through one or more IP routers/switches depending on the managed IP network design.[4][6]
 
 ### 5.4 Control-Flow and Configuration Boundaries
 
-- SDI configuration (e.g., selecting 1.485 vs 1.485/1.001 Gb/s) is determined by the source format or mapping documents referenced by SMPTE 292M, which determine the precise interface clock frequency.[3]  
-- IP media configuration is governed by ST 2110‑10 SDP parameters and network policies (e.g., QoS, multicast); ST 2110‑10 defines the protocol and timing, but specific network engineering choices are left to implementation or other documents. **Assumed; not fully visible**[9][12]  
-- Ethernet PHY configuration (speed, medium, link length) is constrained by IEEE 802.3 clauses; accessible descriptions emphasize that modulation and link length are tied to physical layer specification.[13]  
+- SDI configuration (e.g., selecting 1.485 vs 1.485/1.001 Gb/s) is determined by the source format or mapping documents referenced by SMPTE 292M, which determine the precise interface clock frequency.[3]
+- IP media configuration is governed by ST 2110‑10 SDP parameters and network policies (e.g., QoS, multicast); ST 2110‑10 defines the protocol and timing, but specific network engineering choices are left to implementation or other documents. **Assumed; not fully visible**[9][12]
+- Ethernet PHY configuration (speed, medium, link length) is constrained by IEEE 802.3 clauses; accessible descriptions emphasize that modulation and link length are tied to physical layer specification.[13]
 
 ### 5.5 Boundary Between Standards-Defined Behavior and Implementation Policy
 
-- **Standards-defined**:  
-  - SDI bit-serial structure, 10‑bit word requirement, supported data rates, and payload composition principles are defined by SMPTE 292M/ST 292.[3][10][11][14]  
-  - IP media transport protocol, datagram size limits, SDP requirements, and timing/clock relationships are defined by ST 2110‑10.[4][6][9][12]  
+- **Standards-defined**:
+  - SDI bit-serial structure, 10‑bit word requirement, supported data rates, and payload composition principles are defined by SMPTE 292M/ST 292.[3][10][11][14]
+  - IP media transport protocol, datagram size limits, SDP requirements, and timing/clock relationships are defined by ST 2110‑10.[4][6][9][12]
   - Ethernet physical/MAC operations and supported media types are defined by IEEE 802.3.[7][8][13][5]
 
-- **Implementation policy (outside visible clauses)**:  
-  - Choice of cable types, lengths, and redundancy schemes within SDI and IP networks. **Unverified**  
-  - Specific QoS mechanisms, buffering strategies, and redundancy topologies for ST 2110 media networks. **Unverified**  
+- **Implementation policy (outside visible clauses)**:
+  - Choice of cable types, lengths, and redundancy schemes within SDI and IP networks. **Unverified**
+  - Specific QoS mechanisms, buffering strategies, and redundancy topologies for ST 2110 media networks. **Unverified**
   - Mapping of SDTV and packetized data into SMPTE 292M payload beyond high-level statement. **Unverified**[3]
 
 ### 5.6 Simple Relationship Diagram
@@ -186,33 +184,33 @@ flowchart TD
 
 **Given**: SMPTE 292M total data rate is 1.485 Gb/s or 1.485/1.001 Gb/s; source data words are 10 bits.[3][10][11][14]
 
-1. **Total data rate (case 1)**  
+1. **Total data rate (case 1)**
    \[
    R_{\mathrm{total,1}} = 1.485 \times 10^{9} \ \mathrm{bits/s}
    \][3][10][11][14]
 
-2. **Total data rate (case 2)**  
+2. **Total data rate (case 2)**
    \[
    R_{\mathrm{total,2}} = \frac{1.485}{1.001} \times 10^{9} \ \mathrm{bits/s}
    \][3][11][14]
 
-3. **Word size**  
+3. **Word size**
    \[
    N_{\mathrm{bits,word}} = 10 \ \mathrm{bits}
    \][3][11][14]
 
-4. **Derived word rate (Assumed)**  
-   Using the relationship \( f_{\mathrm{word}} = \frac{R_{\mathrm{total}}}{N_{\mathrm{bits,word}}} \), for case 1:  
+4. **Derived word rate (Assumed)**
+   Using the relationship \( f_{\mathrm{word}} = \frac{R_{\mathrm{total}}}{N_{\mathrm{bits,word}}} \), for case 1:
    \[
    f_{\mathrm{word,1}} = \frac{1.485 \times 10^{9}}{10} = 1.485 \times 10^{8} \ \mathrm{words/s}
-   \][3][11][14]  
+   \][3][11][14]
 
    This calculation is **assumed** based on basic digital communications math, not explicitly shown in the accessible SMPTE text. **Unverified as an explicit clause.**
 
 ### 6.3 Qualitative Timing and Datagram Constraints (IP Media)
 
-- ST 2110‑10 defines datagram size limitations but accessible summaries do not provide numeric maxima or formulas.[9][12]  
-- ST 2110‑10 defines clocks and timing relationships but no specific numeric jitter or offset formulas are visible in excerpts.[9][12]  
+- ST 2110‑10 defines datagram size limitations but accessible summaries do not provide numeric maxima or formulas.[9][12]
+- ST 2110‑10 defines clocks and timing relationships but no specific numeric jitter or offset formulas are visible in excerpts.[9][12]
 
 These aspects should be treated as **Unverified** at the numeric/formula level pending access to full ST 2110‑10 clause text.
 
@@ -238,51 +236,51 @@ These aspects should be treated as **Unverified** at the numeric/formula level p
 
 Implementation guidance in this section is **derived** from normative text and secondary practice and is explicitly labeled as such.
 
-1. **Required fields for SDI link models**  
-   - `data_rate`: must be either 1.485 Gb/s or 1.485/1.001 Gb/s.[3][10][11][14]  
-   - `word_size_bits`: must be 10.[3][11][14]  
-   - `medium_type`: `"coax_75ohm"` or `"fiber"`, with electrical coax specified as 75 Ω nominal.[1][10]  
+1. **Required fields for SDI link models**
+   - `data_rate`: must be either 1.485 Gb/s or 1.485/1.001 Gb/s.[3][10][11][14]
+   - `word_size_bits`: must be 10.[3][11][14]
+   - `medium_type`: `"coax_75ohm"` or `"fiber"`, with electrical coax specified as 75 Ω nominal.[1][10]
    - `payload_type`: `"HDTV_component"`, `"SDTV_mapped"`, or `"packetized_data"`, per SMPTE 292M payload description.[3][10]
 
-2. **Checks on SDI links (Guidance)**  
-   - Verify `data_rate` equals one of the two specified values; treat any other rate as non‑compliant. **Guidance derived from NR-SDI-004**[3][11][14]  
-   - Confirm 10‑bit word serialization and deserialization; devices using different word sizes require separate interfaces. **Guidance from NR-SDI-003**[3][11][14]  
-   - For electrical links, ensure cable impedance is nominally 75 Ω and connectors are broadcast‑grade. **Guidance based on secondary source**[1]  
+2. **Checks on SDI links (Guidance)**
+   - Verify `data_rate` equals one of the two specified values; treat any other rate as non‑compliant. **Guidance derived from NR-SDI-004**[3][11][14]
+   - Confirm 10‑bit word serialization and deserialization; devices using different word sizes require separate interfaces. **Guidance from NR-SDI-003**[3][11][14]
+   - For electrical links, ensure cable impedance is nominally 75 Ω and connectors are broadcast‑grade. **Guidance based on secondary source**[1]
 
-3. **Modeling line structure (RTP and SDI)**  
-   - Treat each line as composed of two interleaved streams (Y and CrCb) with lengths matched via 4:2:2 subsampling.[11][14]  
+3. **Modeling line structure (RTP and SDI)**
+   - Treat each line as composed of two interleaved streams (Y and CrCb) with lengths matched via 4:2:2 subsampling.[11][14]
    - In systems bridging SDI and RTP (e.g., gateways), ensure mapping preserves the interleaving and sampling structure described in RFC 3497.[11][14]
 
 ### 8.2 IP Media over Ethernet (ST 2110-10 + IEEE 802.3)
 
-1. **Required fields for IP media flow models**  
-   - `transport_protocol`: as defined by ST 2110‑10 (exact protocol name Unverified in visible text).[9][12]  
-   - `datagram_size_limit`: value specified by ST 2110‑10 (numeric limit Unverified).[9][12]  
-   - `clock_model`: description of clocks and timing relationships as defined by ST 2110‑10.[9][12]  
-   - `sdp_parameters`: structured representation of ST 2110‑10 SDP requirements.[9][12]  
-   - `network_type`: `"managed_ip"`; devices must be interconnected at the data-plane by a network.[4][6]  
+1. **Required fields for IP media flow models**
+   - `transport_protocol`: as defined by ST 2110‑10 (exact protocol name Unverified in visible text).[9][12]
+   - `datagram_size_limit`: value specified by ST 2110‑10 (numeric limit Unverified).[9][12]
+   - `clock_model`: description of clocks and timing relationships as defined by ST 2110‑10.[9][12]
+   - `sdp_parameters`: structured representation of ST 2110‑10 SDP requirements.[9][12]
+   - `network_type`: `"managed_ip"`; devices must be interconnected at the data-plane by a network.[4][6]
    - `ethernet_phy_profile`: reference to IEEE 802.3 clause or amendment (e.g., base 802.3‑2022, 802.3cy‑2023).[13][5]
 
-2. **Checks on IP media flows (Guidance)**  
-   - Ensure flows operate over a managed IP network rather than ad‑hoc or unmanaged links, in line with ST 2110‑10 scope.[4][6][9]  
-   - Validate that datagram sizes are within ST 2110‑10 limits; in absence of numeric values, treat this as an external configuration to be supplied by standards-aware tooling. **Unverified**[9][12]  
-   - Confirm SDP descriptions are present and include mandatory fields specified by ST 2110‑10 (exact field list Unverified).[9][12]  
+2. **Checks on IP media flows (Guidance)**
+   - Ensure flows operate over a managed IP network rather than ad‑hoc or unmanaged links, in line with ST 2110‑10 scope.[4][6][9]
+   - Validate that datagram sizes are within ST 2110‑10 limits; in absence of numeric values, treat this as an external configuration to be supplied by standards-aware tooling. **Unverified**[9][12]
+   - Confirm SDP descriptions are present and include mandatory fields specified by ST 2110‑10 (exact field list Unverified).[9][12]
    - Verify Ethernet PHY is configured with modulation appropriate to the selected speed and medium, as per IEEE 802.3.[13]
 
 ### 8.3 Modeling Unverified or External Values
 
-- Treat any parameter whose numeric value is not visible in accessible clauses (e.g., maximum datagram size, jitter bounds, link length limits) as an **externally supplied** value, with an associated `source` field indicating the external document or operator policy. **Assumed practice**  
-- Mark such parameters as `status: "Unverified"` in engineering models until corroborated against primary standards.  
+- Treat any parameter whose numeric value is not visible in accessible clauses (e.g., maximum datagram size, jitter bounds, link length limits) as an **externally supplied** value, with an associated `source` field indicating the external document or operator policy. **Assumed practice**
+- Mark such parameters as `status: "Unverified"` in engineering models until corroborated against primary standards.
 
 ### 8.4 Reporting Outputs (For Future AI-Assisted Work)
 
 Implementation should generate reports containing:
 
-- Explicit mapping of each link or flow to:  
-  - SDI standard (e.g., SMPTE 292M).  
-  - IP media standard (e.g., ST 2110‑10).  
-  - Ethernet clause or profile (e.g., 802.3‑2022, 802.3cy‑2023).[3][4][5][13]  
-- A list of **normative** parameters (with citations) and **assumed/unverified** parameters, so that future systems can prioritize high‑trust data.  
+- Explicit mapping of each link or flow to:
+  - SDI standard (e.g., SMPTE 292M).
+  - IP media standard (e.g., ST 2110‑10).
+  - Ethernet clause or profile (e.g., 802.3‑2022, 802.3cy‑2023).[3][4][5][13]
+- A list of **normative** parameters (with citations) and **assumed/unverified** parameters, so that future systems can prioritize high‑trust data.
 - A register of risks as per Section 7, including whether each risk has been mitigated or remains open.
 
 ---
@@ -291,16 +289,16 @@ Implementation should generate reports containing:
 
 The following checklist distinguishes between **normative checks** (directly supported by standard text) and **assumption checks** (implementation guidance).
 
-1. SDI data rate equals 1.485 Gb/s or 1.485/1.001 Gb/s.[3][10][11][14]  
-2. SDI source data words are 10 bits.[3][11][14]  
-3. SDI link medium correctly identified as 75 Ω coaxial (electrical) or fiber‑optic (optical).[1][10]  
-4. SDI payload identified as HDTV component, mapped SDTV, or packetized data consistent with SMPTE 292M scope.[3][10]  
-5. SDI line structure modeled as interleaved Y and CrCb streams with 4:2:2 subsampling.[11][14]  
-6. Devices identified as ST 2110‑10 compliant are interconnected via an IP network at the data-plane.[4][6]  
-7. Transport layer, datagram size, SDP, and clock relationships are recognized as governed by ST 2110‑10.[9][12]  
-8. Ethernet links used for IP media are documented with their IEEE 802.3 physical layer variant and medium type.[7][8][13]  
-9. PHY modulation is verified as appropriate for configured speed and medium, per IEEE 802.3.[13]  
-10. All parameters without explicit numeric values in accessible standards (e.g., jitter limits, cable length) are tagged `Unverified` and associated with external references or policies.  
+1. SDI data rate equals 1.485 Gb/s or 1.485/1.001 Gb/s.[3][10][11][14]
+2. SDI source data words are 10 bits.[3][11][14]
+3. SDI link medium correctly identified as 75 Ω coaxial (electrical) or fiber‑optic (optical).[1][10]
+4. SDI payload identified as HDTV component, mapped SDTV, or packetized data consistent with SMPTE 292M scope.[3][10]
+5. SDI line structure modeled as interleaved Y and CrCb streams with 4:2:2 subsampling.[11][14]
+6. Devices identified as ST 2110‑10 compliant are interconnected via an IP network at the data-plane.[4][6]
+7. Transport layer, datagram size, SDP, and clock relationships are recognized as governed by ST 2110‑10.[9][12]
+8. Ethernet links used for IP media are documented with their IEEE 802.3 physical layer variant and medium type.[7][8][13]
+9. PHY modulation is verified as appropriate for configured speed and medium, per IEEE 802.3.[13]
+10. All parameters without explicit numeric values in accessible standards (e.g., jitter limits, cable length) are tagged `Unverified` and associated with external references or policies.
 
 ---
 
@@ -308,33 +306,33 @@ The following checklist distinguishes between **normative checks** (directly sup
 
 The following items are explicitly marked as **Unverified**, either because the necessary clauses are not visible or because they rely solely on secondary interpretations.
 
-1. **Exact interface clock frequencies** for each SMPTE 292M payload mapping (HDTV vs mapped SDTV vs packetized data).[3]  
-2. **Detailed electrical specifications** for SDI (e.g., voltage swing, jitter tolerance, equalization requirements) beyond the mention of nominal 75 Ω cable.[1][10]  
-3. **Maximum recommended cable lengths** and attenuation budgets for SMPTE 292 SDI over different coax and fiber types.[1][10]  
-4. **Numeric datagram size limits** specified by ST 2110‑10 for IP media packets.[9][12]  
-5. **Exact transport protocol identity and options** specified by ST 2110‑10 (e.g., particular UDP/RTP profiles).[9][12]  
-6. **Detailed SDP field list and mandatory/optional attributes** for ST 2110‑10 media sessions.[9][12]  
-7. **Numeric jitter, latency, and clock accuracy requirements** for ST 2110‑10 flows.[9][12]  
-8. **Specific PHY parameters** (e.g., maximum link length, loss, power budget) for IEEE 802.3 variants relevant to broadcast, including fiber and copper options.[13][5]  
-9. **Relationship and compatibility rules** among SMPTE 259, SMPTE 344, and SMPTE 292M beyond the statement that SMPTE 292 expands upon them.[1]  
+1. **Exact interface clock frequencies** for each SMPTE 292M payload mapping (HDTV vs mapped SDTV vs packetized data).[3]
+2. **Detailed electrical specifications** for SDI (e.g., voltage swing, jitter tolerance, equalization requirements) beyond the mention of nominal 75 Ω cable.[1][10]
+3. **Maximum recommended cable lengths** and attenuation budgets for SMPTE 292 SDI over different coax and fiber types.[1][10]
+4. **Numeric datagram size limits** specified by ST 2110‑10 for IP media packets.[9][12]
+5. **Exact transport protocol identity and options** specified by ST 2110‑10 (e.g., particular UDP/RTP profiles).[9][12]
+6. **Detailed SDP field list and mandatory/optional attributes** for ST 2110‑10 media sessions.[9][12]
+7. **Numeric jitter, latency, and clock accuracy requirements** for ST 2110‑10 flows.[9][12]
+8. **Specific PHY parameters** (e.g., maximum link length, loss, power budget) for IEEE 802.3 variants relevant to broadcast, including fiber and copper options.[13][5]
+9. **Relationship and compatibility rules** among SMPTE 259, SMPTE 344, and SMPTE 292M beyond the statement that SMPTE 292 expands upon them.[1]
 10. **Broadcast-specific profiles or guidelines** for applying IEEE 802.3cy backplane Ethernet in live production systems.[5]
 
 ---
 
 ## 11. Sources
 
-1. SMPTE 292 (HD-SDI) descriptive article, citing data rates 1.485 Gb/s and 1.485/1.001 Gb/s and 75 Ω coaxial cabling; updated 2026-04-29; secondary.[1]  
-2. SMPTE 292 (duplicate descriptive page) reinforcing HD-SDI characteristics and data rates; secondary.[2]  
-3. “SMPTE 292M Serial Interface” DOC (CD Rev6) containing clause 1.1 and source data requirements (10-bit words, payload mappings, total data rate values); primary text copy.[3]  
-4. SMPTE ST 2110-10:2022 “Professional Media over Managed IP Networks: System Timing and Definitions” PDF (2022-03-28 publication) stating that compliant devices are interconnected at the data-plane by a network; primary.[4]  
-5. IEEE 802.3cy-2023 amendment defining Ethernet MAC parameters and PHY specifications for 2.5 and 5 Gb/s serial transfer over electrical backplanes; primary.[5]  
-6. Alternate access to SMPTE ST 2110-10:2022; confirms network interconnection statement; primary duplicate.[6]  
-7. IEEE 802.3 standard overview describing physical layer and MAC sub-layer for wired Ethernet, covering coax, twisted pair, fiber, and backplanes; secondary.[7]  
-8. IEEE 802.3 descriptive article summarizing Ethernet physical/MAC scope; secondary.[8]  
-9. “SMPTE ST 2110-10: IP Network Fundamentals” explanatory material summarizing ST 2110-10 roles, transport protocol, datagram size limits, SDP requirements, and clocks; secondary.[9]  
-10. “Bit-Serial Digital Interface for High-Definition Television Systems” PDF describing SMPTE 292M bit-serial digital coaxial and fiber-optic interface for HDTV component signals at 1.485 Gb/s and 1.485/1.001 Gb/s, with serialized bit-parallel data; primary text copy.[10]  
-11. RFC 3497 “RTP Payload Format for Uncompressed HDTV (SMPTE 292M)” describing SMPTE 292M as a universal medium of interchange, stipulating 10-bit source words and total data rates of 1.485 Gb/s or 1.485/1.001 Gb/s, and detailing Y/CrCb interleaved line structure with 4:2:2 coding; primary (IETF).[11]  
-12. Vendor/explanatory ST 2110-10 fundamentals material (QxL) summarizing transport protocol, datagram size limitations, SDP requirements, and clocks/timing relationships; secondary.[12]  
-13. IEEE 802.3-2022 description indicating physical layer encodes/decodes frames with modulation specified for speed, medium, and link length; primary.[13]  
-14. PDF copy of RFC 3497; duplicate of source 11 with identical normative content; primary.[14]  
+1. SMPTE 292 (HD-SDI) descriptive article, citing data rates 1.485 Gb/s and 1.485/1.001 Gb/s and 75 Ω coaxial cabling; updated 2026-04-29; secondary.[1]
+2. SMPTE 292 (duplicate descriptive page) reinforcing HD-SDI characteristics and data rates; secondary.[2]
+3. “SMPTE 292M Serial Interface” DOC (CD Rev6) containing clause 1.1 and source data requirements (10-bit words, payload mappings, total data rate values); primary text copy.[3]
+4. SMPTE ST 2110-10:2022 “Professional Media over Managed IP Networks: System Timing and Definitions” PDF (2022-03-28 publication) stating that compliant devices are interconnected at the data-plane by a network; primary.[4]
+5. IEEE 802.3cy-2023 amendment defining Ethernet MAC parameters and PHY specifications for 2.5 and 5 Gb/s serial transfer over electrical backplanes; primary.[5]
+6. Alternate access to SMPTE ST 2110-10:2022; confirms network interconnection statement; primary duplicate.[6]
+7. IEEE 802.3 standard overview describing physical layer and MAC sub-layer for wired Ethernet, covering coax, twisted pair, fiber, and backplanes; secondary.[7]
+8. IEEE 802.3 descriptive article summarizing Ethernet physical/MAC scope; secondary.[8]
+9. “SMPTE ST 2110-10: IP Network Fundamentals” explanatory material summarizing ST 2110-10 roles, transport protocol, datagram size limits, SDP requirements, and clocks; secondary.[9]
+10. “Bit-Serial Digital Interface for High-Definition Television Systems” PDF describing SMPTE 292M bit-serial digital coaxial and fiber-optic interface for HDTV component signals at 1.485 Gb/s and 1.485/1.001 Gb/s, with serialized bit-parallel data; primary text copy.[10]
+11. RFC 3497 “RTP Payload Format for Uncompressed HDTV (SMPTE 292M)” describing SMPTE 292M as a universal medium of interchange, stipulating 10-bit source words and total data rates of 1.485 Gb/s or 1.485/1.001 Gb/s, and detailing Y/CrCb interleaved line structure with 4:2:2 coding; primary (IETF).[11]
+12. Vendor/explanatory ST 2110-10 fundamentals material (QxL) summarizing transport protocol, datagram size limitations, SDP requirements, and clocks/timing relationships; secondary.[12]
+13. IEEE 802.3-2022 description indicating physical layer encodes/decodes frames with modulation specified for speed, medium, and link length; primary.[13]
+14. PDF copy of RFC 3497; duplicate of source 11 with identical normative content; primary.[14]
 15. IEEE 802.3 Ethernet overview presentation describing layered structure and mentioning distance/media considerations; secondary.[15]

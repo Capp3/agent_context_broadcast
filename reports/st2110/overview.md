@@ -16,6 +16,7 @@ prompt_template_version: 0.1.0
 status: draft
 supersedes: master@0.1.0
 ---
+
 # ST 2110 Overview and Cross-Domain Context
 
 ## 1. Executive Summary

@@ -16,6 +16,7 @@ prompt_template_version: 0.1.0
 status: draft
 supersedes: ttml@0.1.0
 ---
+
 # TTML and IMSC Timed Text Truth Report
 
 ## 1. Executive Summary

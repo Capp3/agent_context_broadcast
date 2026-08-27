@@ -16,6 +16,7 @@ prompt_template_version: 0.1.0
 status: draft
 supersedes: ptp@0.1.0
 ---
+
 # PTP Timing and Synchronization Truth Report
 
 ## 1. Executive Summary

@@ -1,4 +1,3 @@
-```yaml
 ---
 report_id: genlock-broadcast-engineering-reference
 title: Genlock in Broadcast Engineering – Technical Reference
@@ -11,7 +10,6 @@ prompt_template: template-new-topic.md
 prompt_template_version: 0.1.0
 status: draft
 ---
-```
 
 ## 1. Executive Summary
 
@@ -27,33 +25,33 @@ This report maps the normative timing parameters from SMPTE ST 170 and related N
 
 ### 2.1 In-scope
 
-1. Concept of genlock as used in broadcast engineering, including generator locking of video devices to common sync.[3][11][13][15]  
+1. Concept of genlock as used in broadcast engineering, including generator locking of video devices to common sync.[3][11][13][15]
 2. Analog reference signals used for genlock in baseband plants:
-   - NTSC/PAL black burst (composite video at black level including sync and color burst).[11][14]  
-   - Tri‑level sync for HD/UHD baseband video, as described in secondary engineering guidance.[11][14]  
+   - NTSC/PAL black burst (composite video at black level including sync and color burst).[11][14]
+   - Tri‑level sync for HD/UHD baseband video, as described in secondary engineering guidance.[11][14]
 3. Timing relationships for 525‑line NTSC composite systems that underlie SD genlock references:
-   - Horizontal line frequency, vertical frequency, and color subcarrier relationships.[2][8][9][12]  
-4. High-level relationship between genlock and PTP-based timing in hybrid/IP plants (SMPTE ST 2059 referenced but not accessed).[13][14]  
+   - Horizontal line frequency, vertical frequency, and color subcarrier relationships.[2][8][9][12]
+4. High-level relationship between genlock and PTP-based timing in hybrid/IP plants (SMPTE ST 2059 referenced but not accessed).[13][14]
 5. Implementation-oriented guidance for modeling genlock in future AI-assisted engineering work, including validation and risk registers.[11][13][14][15]
 
 ### 2.2 Out-of-scope or Explicitly Limited
 
-1. Detailed waveform parameters, amplitudes, tolerance ranges, and connector pinouts for tri‑level sync and other analog references, which are defined in SMPTE HD standards (e.g., SMPTE ST 274/296 series) but not available in the accessed sources (Unverified).  
-2. Full clause-level behavior of SMPTE ST 2059-1/-2 (PTP for media clock alignment), including exact requirements for phase alignment between PTP time and video frame boundaries (Unverified).[13][14]  
-3. Vendor-specific genlock implementation details (PLL loop bandwidths, recovery times, internal state machines) except where described generically in secondary sources.[11][13][15]  
-4. Non-broadcast uses of genlock (e.g., game consoles, VR headsets) beyond basic conceptual overlap.[3]  
+1. Detailed waveform parameters, amplitudes, tolerance ranges, and connector pinouts for tri‑level sync and other analog references, which are defined in SMPTE HD standards (e.g., SMPTE ST 274/296 series) but not available in the accessed sources (Unverified).
+2. Full clause-level behavior of SMPTE ST 2059-1/-2 (PTP for media clock alignment), including exact requirements for phase alignment between PTP time and video frame boundaries (Unverified).[13][14]
+3. Vendor-specific genlock implementation details (PLL loop bandwidths, recovery times, internal state machines) except where described generically in secondary sources.[11][13][15]
+4. Non-broadcast uses of genlock (e.g., game consoles, VR headsets) beyond basic conceptual overlap.[3]
 
 ### 2.3 Adjacent Topics and Common Misconceptions
 
-1. **Genlock vs timecode.** Timecode gives each frame a unique identifier (metadata), while genlock controls the physical timing of when frames are captured and output.[11] Timecode alone does not guarantee phase alignment between devices; genlock is required for synchronous switching and compositing.[5][11]  
-2. **Genlock vs frame synchronization.** Frame synchronizers can buffer and re-time asynchronous inputs to a synchronous plant, but they do not replace the need for genlock within the plant; they are typically used at boundaries where genlock is unavailable.[13][15]  
-3. **Genlock vs PTP.** PTP (per SMPTE ST 2059) is a network timing mechanism; genlock is the process of aligning media devices to a timing reference. In hybrid plants these must be coherently related to avoid phase competition between analog sync and PTP.[13][14]  
+1. **Genlock vs timecode.** Timecode gives each frame a unique identifier (metadata), while genlock controls the physical timing of when frames are captured and output.[11] Timecode alone does not guarantee phase alignment between devices; genlock is required for synchronous switching and compositing.[5][11]
+2. **Genlock vs frame synchronization.** Frame synchronizers can buffer and re-time asynchronous inputs to a synchronous plant, but they do not replace the need for genlock within the plant; they are typically used at boundaries where genlock is unavailable.[13][15]
+3. **Genlock vs PTP.** PTP (per SMPTE ST 2059) is a network timing mechanism; genlock is the process of aligning media devices to a timing reference. In hybrid plants these must be coherently related to avoid phase competition between analog sync and PTP.[13][14]
 
 ### 2.4 Source Access Limitations
 
-1. SMPTE ST 170 (NTSC composite video) was accessible only via a public PDF marked “stable 2010”; clause-level content appears limited but includes key timing relationships.[12]  
-2. SMPTE HD video and tri‑level sync standards (e.g., SMPTE ST 274, ST 296) and SMPTE ST 2059 were not directly accessed; references to them come from secondary engineering articles.[13][14]  
-3. Several secondary sources (vendor blogs, guides) provide descriptive but non-normative information on genlock behavior; these are explicitly marked as secondary and non-normative.[5][9][11][13][14][15]  
+1. SMPTE ST 170 (NTSC composite video) was accessible only via a public PDF marked “stable 2010”; clause-level content appears limited but includes key timing relationships.[12]
+2. SMPTE HD video and tri‑level sync standards (e.g., SMPTE ST 274, ST 296) and SMPTE ST 2059 were not directly accessed; references to them come from secondary engineering articles.[13][14]
+3. Several secondary sources (vendor blogs, guides) provide descriptive but non-normative information on genlock behavior; these are explicitly marked as secondary and non-normative.[5][9][11][13][14][15]
 
 ---
 
@@ -81,10 +79,10 @@ The following table summarizes key documents.
 | RCA Broadcast News – Genlock device description | ca. mid‑20th century[4] | Historical description of early genlock device | Public | Descriptive; no formal clauses[4] |
 | Reddit r/broadcastengineering – “Can someone explain GENLOCK to me?” | 2022-07-11[1] | Tertiary community explanation | Public | Informal; no standards[1] |
 
-**Source confidence and visibility:**  
-- SMPTE ST 170 content is treated as high-confidence for NTSC timing relationships.[12]  
-- NTSC explanatory sources are consistent with ST 170 and each other; treated as corroborating but secondary.[2][6][8][9][10]  
-- All genlock behavior and tri-level sync descriptions are secondary or tertiary; no primary genlock-specific standard was accessed.[3][5][7][11][13][14][15]  
+**Source confidence and visibility:**
+- SMPTE ST 170 content is treated as high-confidence for NTSC timing relationships.[12]
+- NTSC explanatory sources are consistent with ST 170 and each other; treated as corroborating but secondary.[2][6][8][9][10]
+- All genlock behavior and tri-level sync descriptions are secondary or tertiary; no primary genlock-specific standard was accessed.[3][5][7][11][13][14][15]
 
 ---
 
@@ -111,24 +109,24 @@ The following table defines requirements, with IDs for later reference. “Norma
 
 ### 5.1 Core Objects and Signals
 
-1. **House timing authority (Sync Pulse Generator, SPG).**  
-   - Device or system that produces the master reference timing for the facility.[7][13][14]  
-   - Outputs analog sync signals (black burst, tri‑level sync) and/or PTP time according to facility design.[13][14]  
+1. **House timing authority (Sync Pulse Generator, SPG).**
+   - Device or system that produces the master reference timing for the facility.[7][13][14]
+   - Outputs analog sync signals (black burst, tri‑level sync) and/or PTP time according to facility design.[13][14]
 
-2. **Genlock reference signal.**  
-   - For SD: composite black burst (NTSC/PAL) containing horizontal and vertical sync pulses plus color burst at black level.[11][14]  
-   - For HD/UHD: tri‑level sync, a bipolar analog pulse sequence used solely for timing.[11][14]  
-   - Carries line and frame timing but no content payload.[11][14]  
+2. **Genlock reference signal.**
+   - For SD: composite black burst (NTSC/PAL) containing horizontal and vertical sync pulses plus color burst at black level.[11][14]
+   - For HD/UHD: tri‑level sync, a bipolar analog pulse sequence used solely for timing.[11][14]
+   - Carries line and frame timing but no content payload.[11][14]
 
-3. **Genlock consumer device.**  
-   - Camera, production switcher, graphics engine, SDI/HDMI encoder/decoder, router, or other device with a genlock input.[5][11][13][15]  
-   - Contains internal oscillators and phase-locked loops (PLLs) that lock to the reference.[5][11][15]  
+3. **Genlock consumer device.**
+   - Camera, production switcher, graphics engine, SDI/HDMI encoder/decoder, router, or other device with a genlock input.[5][11][13][15]
+   - Contains internal oscillators and phase-locked loops (PLLs) that lock to the reference.[5][11][15]
 
-4. **Video program signal.**  
-   - Baseband analog or digital video (e.g., SDI) whose timing (sampling, blanking intervals) is derived from a locked internal clock.[9][11][15]  
+4. **Video program signal.**
+   - Baseband analog or digital video (e.g., SDI) whose timing (sampling, blanking intervals) is derived from a locked internal clock.[9][11][15]
 
-5. **Timecode and metadata.**  
-   - Ancillary mechanisms that label frames with identifiers but do not impose timing; typically LTC, VITC, or embedded timecode.[11]  
+5. **Timecode and metadata.**
+   - Ancillary mechanisms that label frames with identifiers but do not impose timing; typically LTC, VITC, or embedded timecode.[11]
 
 ### 5.2 Timing and Data Flow
 
@@ -145,32 +143,32 @@ flowchart TD
     DeviceB --> ProgramB[Program Video B (SDI)]
 ```
 
-1. The SPG generates analog reference signals and, in hybrid plants, participates in or is disciplined by a PTP grandmaster.[13][14]  
-2. Each genlock-capable baseband device receives the analog reference and uses a PLL to align its internal line and frame timing to the reference’s pulses.[5][11][15]  
-3. Program video signals produced by those devices inherit the locked timing (horizontal, vertical, subcarrier relations).[9][12][15]  
-4. Switchers and routers assume that all connected synchronous inputs share the same line and frame phase, enabling transparent transitions without disturbing downstream receiver sync.[13][15]  
+1. The SPG generates analog reference signals and, in hybrid plants, participates in or is disciplined by a PTP grandmaster.[13][14]
+2. Each genlock-capable baseband device receives the analog reference and uses a PLL to align its internal line and frame timing to the reference’s pulses.[5][11][15]
+3. Program video signals produced by those devices inherit the locked timing (horizontal, vertical, subcarrier relations).[9][12][15]
+4. Switchers and routers assume that all connected synchronous inputs share the same line and frame phase, enabling transparent transitions without disturbing downstream receiver sync.[13][15]
 
 ### 5.3 Control-flow and State
 
 Devices typically implement implicit states related to genlock, although detailed state machines are vendor-specific and Unverified:
 
-- **Free-running:** Device uses its internal oscillator without external reference; output timing may drift relative to other devices.[11][13]  
-- **Lock acquisition:** On presence of a valid reference, PLL attempts to phase-align; depending on design, this may take multiple frames.[5][11][15]  
-- **Locked:** Internal timing is phase-aligned to reference; frame and line boundaries match house sync.[5][11][13]  
-- **Loss-of-reference:** On reference drop-out, device may hold last-known timing, revert to free-running, or mute output; behaviors are vendor-specific (Unverified).[11][13]  
+- **Free-running:** Device uses its internal oscillator without external reference; output timing may drift relative to other devices.[11][13]
+- **Lock acquisition:** On presence of a valid reference, PLL attempts to phase-align; depending on design, this may take multiple frames.[5][11][15]
+- **Locked:** Internal timing is phase-aligned to reference; frame and line boundaries match house sync.[5][11][13]
+- **Loss-of-reference:** On reference drop-out, device may hold last-known timing, revert to free-running, or mute output; behaviors are vendor-specific (Unverified).[11][13]
 
 These behaviors define the boundary between standards-derived timing (e.g., NTSC scan parameters) and implementation policy (PLL design, lock criteria).
 
 ### 5.4 Boundary Between Standards and Policy
 
-1. **Standards-derived:**  
-   - Exact frequencies and relationships for NTSC composite video.[2][8][9][10][12]  
-   - Line count and interlace structure (525 lines, 2:1 interlace).[12]  
+1. **Standards-derived:**
+   - Exact frequencies and relationships for NTSC composite video.[2][8][9][10][12]
+   - Line count and interlace structure (525 lines, 2:1 interlace).[12]
 
-2. **Implementation/policy:**  
-   - How a device measures and validates reference presence (thresholds, noise tolerance) – Unverified.  
-   - Allowed phase offsets between device output and reference (e.g., preset line/field offsets) – typically configurable and not standardized.[11][14]  
-   - Behavior on loss-of-reference, including switching to internal timing or muting outputs.[11][13]  
+2. **Implementation/policy:**
+   - How a device measures and validates reference presence (thresholds, noise tolerance) – Unverified.
+   - Allowed phase offsets between device output and reference (e.g., preset line/field offsets) – typically configurable and not standardized.[11][14]
+   - Behavior on loss-of-reference, including switching to internal timing or muting outputs.[11][13]
 
 ---
 
@@ -188,9 +186,9 @@ NTSC documentation provides the horizontal line frequency \( f_H \) as:[8][12]
 f_H = \frac{4.5 \times 10^6}{286} \approx 15{,}734.27 \text{ Hz}
 \][8][12]
 
-Inputs:  
-- Audio subcarrier frequency 4.5 MHz (design parameter).[8]  
-- Integer constant 286 from system design constraints.[8]  
+Inputs:
+- Audio subcarrier frequency 4.5 MHz (design parameter).[8]
+- Integer constant 286 from system design constraints.[8]
 
 This value matches the SMPTE ST 170 statement of 15,734.265 Hz.[12]
 
@@ -204,8 +202,8 @@ f_V = f_H \times \frac{2}{525}
 
 Worked example (normative-derived):
 
-- Given \( f_H = 15{,}734.27 \text{ Hz} \).[8][12]  
-- Compute \( f_V = 15{,}734.27 \times \frac{2}{525} \approx 59.94 \text{ Hz} \).[2][8][10]  
+- Given \( f_H = 15{,}734.27 \text{ Hz} \).[8][12]
+- Compute \( f_V = 15{,}734.27 \times \frac{2}{525} \approx 59.94 \text{ Hz} \).[2][8][10]
 
 This corresponds to a field rate of approximately 59.94 Hz (two interlaced fields per frame) and a frame rate of approximately 29.97 frames per second.[10]
 
@@ -219,7 +217,7 @@ f_{\text{frame}} = \frac{f_V}{2}
 
 Using the worked example above:
 
-- \( f_{\text{frame}} = \frac{59.94}{2} \approx 29.97 \text{ frames/s} \).[10]  
+- \( f_{\text{frame}} = \frac{59.94}{2} \approx 29.97 \text{ frames/s} \).[10]
 
 This relationship is widely documented as characteristic of NTSC color systems.[8][9][10]
 
@@ -241,8 +239,8 @@ f_{SC} = \frac{455}{2} f_H
 
 Numeric example (using SMPTE ST 170 horizontal frequency):[12]
 
-- \( f_H = 15{,}734.265 \text{ Hz} \).[12]  
-- \( f_{SC} = \frac{455}{2} \times 15{,}734.265 \approx 3{,}579{,}545 \text{ Hz} \).[2][6][8]  
+- \( f_H = 15{,}734.265 \text{ Hz} \).[12]
+- \( f_{SC} = \frac{455}{2} \times 15{,}734.265 \approx 3{,}579{,}545 \text{ Hz} \).[2][6][8]
 
 This produces the canonical NTSC color subcarrier frequency of 3.579545 MHz, consistent across multiple sources.[2][6][8][9][12]
 
@@ -292,47 +290,47 @@ All guidance in this section is derived from secondary sources and treated as Be
 ### 8.1 Modeling Genlock in Systems and AI Contexts
 
 1. Represent **genlock reference** as a distinct signal type with properties:
-   - Format (black burst, tri‑level sync).[11][14]  
-   - Nominal line, field, and frame rates (from NTSC or HD standards).[2][8][9][12]  
-   - Accepted by specific device inputs (boolean capabilities per device).[11][14]  
+   - Format (black burst, tri‑level sync).[11][14]
+   - Nominal line, field, and frame rates (from NTSC or HD standards).[2][8][9][12]
+   - Accepted by specific device inputs (boolean capabilities per device).[11][14]
 
 2. Represent **devices** with genlock-related attributes:
-   - `supports_genlock`: true/false.  
-   - `supported_reference_formats`: list of formats (e.g., NTSC black, 1080i tri-level) – Unverified; populate from vendor data.  
-   - `lock_status`: states (Free-running, Lock-acquiring, Locked, Loss-of-reference).[11][13][15]  
-   - `timing_source`: enum (Internal, Analog reference, PTP).  
+   - `supports_genlock`: true/false.
+   - `supported_reference_formats`: list of formats (e.g., NTSC black, 1080i tri-level) – Unverified; populate from vendor data.
+   - `lock_status`: states (Free-running, Lock-acquiring, Locked, Loss-of-reference).[11][13][15]
+   - `timing_source`: enum (Internal, Analog reference, PTP).
 
-3. For **IP-based timing**, model PTP as providing time stamps and media clock alignment per SMPTE ST 2059 (normative details Unverified).[13][14]  
+3. For **IP-based timing**, model PTP as providing time stamps and media clock alignment per SMPTE ST 2059 (normative details Unverified).[13][14]
 
 ### 8.2 Recommended Checks and House Practices
 
-1. **House reference integrity checks:**  
-   - Verify that the SPG outputs the expected format (black burst or tri-level) with nominal rates per NTSC or HD system design.[2][8][9][12]  
-   - Confirm correct 75‑ohm termination and signal distribution via buffered outputs or controlled loop-through.[14]  
+1. **House reference integrity checks:**
+   - Verify that the SPG outputs the expected format (black burst or tri-level) with nominal rates per NTSC or HD system design.[2][8][9][12]
+   - Confirm correct 75‑ohm termination and signal distribution via buffered outputs or controlled loop-through.[14]
 
-2. **Device configuration practices:**  
-   - Ensure all synchronous plant devices that support genlock are configured to use the same reference format from the same SPG.[11][13][14]  
-   - For devices that cannot genlock, plan frame synchronizers or asynchronous switching modes.[13][15]  
+2. **Device configuration practices:**
+   - Ensure all synchronous plant devices that support genlock are configured to use the same reference format from the same SPG.[11][13][14]
+   - For devices that cannot genlock, plan frame synchronizers or asynchronous switching modes.[13][15]
 
-3. **Hybrid plant timing practices:**  
-   - Maintain a clear mapping between analog sync and PTP time; e.g., SPG disciplined by PTP or PTP derived from SPG.[13][14]  
-   - Avoid configuring devices to follow conflicting timing sources without defined precedence.  
+3. **Hybrid plant timing practices:**
+   - Maintain a clear mapping between analog sync and PTP time; e.g., SPG disciplined by PTP or PTP derived from SPG.[13][14]
+   - Avoid configuring devices to follow conflicting timing sources without defined precedence.
 
-4. **Operational practices:**  
-   - Treat genlock failures as critical alarms; they affect plant-wide timing.[13][14]  
-   - When integrating new sources (satellite, remote feeds), verify synchronization before including them in live switching paths.[15]  
+4. **Operational practices:**
+   - Treat genlock failures as critical alarms; they affect plant-wide timing.[13][14]
+   - When integrating new sources (satellite, remote feeds), verify synchronization before including them in live switching paths.[15]
 
 ### 8.3 Modeling Unverified Values
 
-1. **Tri-level sync waveform parameters (amplitude, pulse width, rise/fall times).**  
-   - Mark as Unverified in models; create placeholders like `tri_level_amp` without specific numeric values.  
-   - Bind actual values from vendor specs or SMPTE HD standards when accessible.  
+1. **Tri-level sync waveform parameters (amplitude, pulse width, rise/fall times).**
+   - Mark as Unverified in models; create placeholders like `tri_level_amp` without specific numeric values.
+   - Bind actual values from vendor specs or SMPTE HD standards when accessible.
 
-2. **Device-specific lock threshold and jitter tolerance.**  
-   - Model as ranges (e.g., `max_jitter_ps`) without filling numeric values unless device documentation is available.  
+2. **Device-specific lock threshold and jitter tolerance.**
+   - Model as ranges (e.g., `max_jitter_ps`) without filling numeric values unless device documentation is available.
 
-3. **Loss-of-reference behavior.**  
-   - Represent as device policies (`hold_phase`, `switch_internal`, `mute_output`) and mark them as implementation-dependent until confirmed.[11][13]  
+3. **Loss-of-reference behavior.**
+   - Represent as device policies (`hold_phase`, `switch_internal`, `mute_output`) and mark them as implementation-dependent until confirmed.[11][13]
 
 ---
 
@@ -340,25 +338,25 @@ All guidance in this section is derived from secondary sources and treated as Be
 
 The following checklist is intended for engineering validation or AI-assisted review of genlock configurations. All items are implementation guidance (Best Practice) derived from secondary sources.
 
-1. Confirm that the facility has a declared **house timing authority** (SPG and/or PTP grandmaster).[13][14]  
-2. Verify that the SPG output format (black burst, tri-level) matches the system’s baseband video format (e.g., NTSC SD, HD 1080).[11][14]  
+1. Confirm that the facility has a declared **house timing authority** (SPG and/or PTP grandmaster).[13][14]
+2. Verify that the SPG output format (black burst, tri-level) matches the system’s baseband video format (e.g., NTSC SD, HD 1080).[11][14]
 3. Check that the SPG’s NTSC-derived timing (for SD) matches:
-   - \( f_H \approx 15{,}734.27 \text{ Hz} \).[8][12]  
-   - \( f_V \approx 59.94 \text{ Hz} \).[2][8][10][12]  
-   - \( f_{SC} \approx 3.579545 \text{ MHz} \).[2][6][8][12]  
+   - \( f_H \approx 15{,}734.27 \text{ Hz} \).[8][12]
+   - \( f_V \approx 59.94 \text{ Hz} \).[2][8][10][12]
+   - \( f_{SC} \approx 3.579545 \text{ MHz} \).[2][6][8][12]
 
-4. Verify that genlock reference distribution uses 75‑ohm coaxial cabling with correct termination and buffered outputs or controlled loop-through.[14]  
+4. Verify that genlock reference distribution uses 75‑ohm coaxial cabling with correct termination and buffered outputs or controlled loop-through.[14]
 5. For each device:
-   - Confirm it supports genlock and the specific reference format offered.[5][11][13][14]  
-   - Confirm it is configured to use the house reference rather than free-running or an alternate source.[11][13]  
+   - Confirm it supports genlock and the specific reference format offered.[5][11][13][14]
+   - Confirm it is configured to use the house reference rather than free-running or an alternate source.[11][13]
 
-6. Confirm that all synchronous inputs to production switchers share the same timing domain and are locked (or frame-synchronized if they cannot lock).[13][15]  
-7. In hybrid plants, verify that analog reference and PTP share a defined relationship, with one acting as authoritative and phase offsets documented.[13][14]  
+6. Confirm that all synchronous inputs to production switchers share the same timing domain and are locked (or frame-synchronized if they cannot lock).[13][15]
+7. In hybrid plants, verify that analog reference and PTP share a defined relationship, with one acting as authoritative and phase offsets documented.[13][14]
 8. Implement monitoring for:
-   - Reference presence and amplitude (numeric thresholds Unverified; compare to vendor specs).  
-   - Device lock status (e.g., LEDs, SNMP, control reports).[13][14]  
+   - Reference presence and amplitude (numeric thresholds Unverified; compare to vendor specs).
+   - Device lock status (e.g., LEDs, SNMP, control reports).[13][14]
 
-9. Prior to live events, perform test switching between sources to confirm there are no visible sync disruptions or artifacts.[13][15]  
+9. Prior to live events, perform test switching between sources to confirm there are no visible sync disruptions or artifacts.[13][15]
 
 ---
 
@@ -366,23 +364,23 @@ The following checklist is intended for engineering validation or AI-assisted re
 
 The following items could not be verified against primary standards in the accessed material and must be treated as Unverified until supported by additional sources:
 
-1. **Tri-level sync waveform parameters and tolerances:**  
-   - Exact amplitude, pulse shape, timing tolerances, and polarity are defined in SMPTE HD standards (e.g., SMPTE ST 274/296) but those documents were not accessed.  
+1. **Tri-level sync waveform parameters and tolerances:**
+   - Exact amplitude, pulse shape, timing tolerances, and polarity are defined in SMPTE HD standards (e.g., SMPTE ST 274/296) but those documents were not accessed.
 
-2. **SMPTE ST 2059 clause-level requirements:**  
-   - Specific mandates for mapping PTP time to video frame boundaries and acceptable phase alignment ranges are Unverified; only the existence of ST 2059 and its role in PTP for media was noted.[13][14]  
+2. **SMPTE ST 2059 clause-level requirements:**
+   - Specific mandates for mapping PTP time to video frame boundaries and acceptable phase alignment ranges are Unverified; only the existence of ST 2059 and its role in PTP for media was noted.[13][14]
 
-3. **Standardized device behavior on genlock loss:**  
-   - No primary standard describing required behavior (e.g., holdover, muting) was found; behavior appears vendor-specific and policy-driven.[11][13][15]  
+3. **Standardized device behavior on genlock loss:**
+   - No primary standard describing required behavior (e.g., holdover, muting) was found; behavior appears vendor-specific and policy-driven.[11][13][15]
 
-4. **Formal genlock standard:**  
-   - No dedicated SMPTE or ITU standard titled specifically for “genlock” was identified; genlock appears as a technique implemented relative to video timing standards.[3][11][13][15]  
+4. **Formal genlock standard:**
+   - No dedicated SMPTE or ITU standard titled specifically for “genlock” was identified; genlock appears as a technique implemented relative to video timing standards.[3][11][13][15]
 
-5. **Exact mapping of genlock reference formats to specific HD/UHD video formats:**  
-   - While secondary sources state that tri-level sync is used for HD/UHD, they do not detail the full matrix of which sync format applies to which resolution/frame rate.[11][14]  
+5. **Exact mapping of genlock reference formats to specific HD/UHD video formats:**
+   - While secondary sources state that tri-level sync is used for HD/UHD, they do not detail the full matrix of which sync format applies to which resolution/frame rate.[11][14]
 
-6. **Numeric jitter and phase tolerance requirements for lock:**  
-   - No primary numeric limits for allowable jitter or phase error in genlock locking behavior were found; these likely exist in SMPTE or device specifications not accessed.  
+6. **Numeric jitter and phase tolerance requirements for lock:**
+   - No primary numeric limits for allowable jitter or phase error in genlock locking behavior were found; these likely exist in SMPTE or device specifications not accessed.
 
 ---
 
@@ -390,18 +388,18 @@ The following items could not be verified against primary standards in the acces
 
 Numbers here correspond to citation indices used throughout the report.
 
-1. Community explanation of genlock in a broadcast engineering context (Reddit r/broadcastengineering, “Can someone explain GENLOCK to me?”, 2022-07-11).  
-2. Analog Devices, “NTSC” glossary entry, providing subcarrier frequency and horizontal/vertical rate relationships (updated 2026-07-27).  
-3. Encyclopedia article “Genlock” describing generator locking and its use in synchronizing multiple video sources (Wikipedia, last updated 2026-04-26).  
-4. Historical description of an RCA genlock device in RCA Broadcast News, discussing automatic lock between television pickup systems (mid‑20th century).  
-5. JEM Productions, “Genlock vs Timecode: Interactive Sync Visualizer & Guide,” explaining genlock pulses, camera shutter alignment, and differences from timecode (updated 2026-03-26).  
-6. “NTSC Colour TV System” (Brainkart, 2017-04-02), explaining NTSC subcarrier design, including \( f_{SC} = (2n+1) f_H / 2 \) and numeric example.  
-7. Rediffusion London, “How it works… The Problem of Genlock,” describing house SPG locked to remote generator and facility-wide genlock behavior (2023-07-12).  
-8. “NTSC Overview” PDF (GoElectronics), giving explicit formulas and numeric values for \( f_H \), \( f_V \), and \( f_{SC} \), including \( f_H = 4.5\times10^6/286 \) and \( f_{SC} = (455/2) f_H \).  
-9. Analog Devices, “Video Basics,” describing analog video fundamentals including NTSC color subcarrier being 455/2 times the horizontal line rate (2002-05-08, updated 2026-08-23).  
-10. TV Technology article “Will the End of NTSC Be the End of 59.94?”, explaining historical reasons for 15,734 Hz line rate, 59.94 Hz field rate, and 29.97 fps frame rate (2008-01-08).  
-11. JEM Productions, “Understanding Genlock vs Timecode: Broadcast Sync Guide,” detailing the distinction between genlock (phasing) and timecode (metadata), and use of tri-level sync and black burst (updated 2026-06-03).  
-12. SMPTE ST 170:2004 (stable 2010), “Composite Analog Video Signal – NTSC,” providing normative NTSC timing including line frequency, subcarrier relationship, 525 lines, and 2:1 interlace (§11.2 and related clauses).  
-13. Meinberg, “Genlock in a networked world,” describing genlock as locking devices to various timing signals and its relationship to PTP in networked environments (2022-08-12).  
-14. AV500, “Tri-Level Sync — Network Ports & Requirements,” describing tri-level sync as a bipolar analog reference, required infrastructure (75‑ohm coax, documented offsets), and its relationship to SMPTE ST 2059 in hybrid plants (2026-05-01).  
+1. Community explanation of genlock in a broadcast engineering context (Reddit r/broadcastengineering, “Can someone explain GENLOCK to me?”, 2022-07-11).
+2. Analog Devices, “NTSC” glossary entry, providing subcarrier frequency and horizontal/vertical rate relationships (updated 2026-07-27).
+3. Encyclopedia article “Genlock” describing generator locking and its use in synchronizing multiple video sources (Wikipedia, last updated 2026-04-26).
+4. Historical description of an RCA genlock device in RCA Broadcast News, discussing automatic lock between television pickup systems (mid‑20th century).
+5. JEM Productions, “Genlock vs Timecode: Interactive Sync Visualizer & Guide,” explaining genlock pulses, camera shutter alignment, and differences from timecode (updated 2026-03-26).
+6. “NTSC Colour TV System” (Brainkart, 2017-04-02), explaining NTSC subcarrier design, including \( f_{SC} = (2n+1) f_H / 2 \) and numeric example.
+7. Rediffusion London, “How it works… The Problem of Genlock,” describing house SPG locked to remote generator and facility-wide genlock behavior (2023-07-12).
+8. “NTSC Overview” PDF (GoElectronics), giving explicit formulas and numeric values for \( f_H \), \( f_V \), and \( f_{SC} \), including \( f_H = 4.5\times10^6/286 \) and \( f_{SC} = (455/2) f_H \).
+9. Analog Devices, “Video Basics,” describing analog video fundamentals including NTSC color subcarrier being 455/2 times the horizontal line rate (2002-05-08, updated 2026-08-23).
+10. TV Technology article “Will the End of NTSC Be the End of 59.94?”, explaining historical reasons for 15,734 Hz line rate, 59.94 Hz field rate, and 29.97 fps frame rate (2008-01-08).
+11. JEM Productions, “Understanding Genlock vs Timecode: Broadcast Sync Guide,” detailing the distinction between genlock (phasing) and timecode (metadata), and use of tri-level sync and black burst (updated 2026-06-03).
+12. SMPTE ST 170:2004 (stable 2010), “Composite Analog Video Signal – NTSC,” providing normative NTSC timing including line frequency, subcarrier relationship, 525 lines, and 2:1 interlace (§11.2 and related clauses).
+13. Meinberg, “Genlock in a networked world,” describing genlock as locking devices to various timing signals and its relationship to PTP in networked environments (2022-08-12).
+14. AV500, “Tri-Level Sync — Network Ports & Requirements,” describing tri-level sync as a bipolar analog reference, required infrastructure (75‑ohm coax, documented offsets), and its relationship to SMPTE ST 2059 in hybrid plants (2026-05-01).
 15. Embedded.com, “Genlock gets broadcast video signal timing in sync,” explaining genlock use in studios, impact on receiver synchronization, and block diagram of a genlock circuit taking SDI input and analog reference (2006-06-16).
